@@ -1,13 +1,14 @@
+--REFERENCE DOCUMENT, MAY OR MAY NOT USE--
 CREATE TABLE `Pump`(
-    `PumpID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    `Model` TEXT NOT NULL,
+    `PumpID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, --create table for pump as per user request, pumpID for each object intended
+    `Model` TEXT NOT NULL, --do not allow any information to be null
     `Quantity` BIGINT NOT NULL COMMENT 'continuous',
     `PartNumber` BIGINT NOT NULL COMMENT 'discrete',
     `Brand` TEXT NOT NULL,
     `Manual` TEXT NOT NULL
 );
 CREATE TABLE `System`(
-    `SystemID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `SystemID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, --create ID for overall system usage
     `SystemName` TEXT NOT NULL,
     `Aerator` TEXT NULL,
     `PumpID` BIGINT NULL COMMENT 'discrete',
@@ -18,7 +19,7 @@ CREATE TABLE `System`(
     `Manual` TEXT NOT NULL
 );
 CREATE TABLE `MaintenanceLog`(
-    `MaintenanceID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `MaintenanceID` BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY, 
     `SystemID` BIGINT NULL COMMENT 'discrete',
     `ProjectID` BIGINT NULL COMMENT 'discrete',
     `Date` DATE NOT NULL,
@@ -29,7 +30,7 @@ CREATE TABLE `Project`(
     `ProjectID` BIGINT NOT NULL AUTO_INCREMENT,
     `ProjectName` TEXT NOT NULL,
     `Description` TEXT NOT NULL,
-    `Funded` BINARY(16) NOT NULL,
+    `Funded` BINARY(16) NOT NULL,  --go through and create for project
     `StartDate` DATE NOT NULL,
     `EndDate` DATE NULL,
     PRIMARY KEY(`ProjectName`)
