@@ -2,7 +2,7 @@ body {
     font-family: Montserrat, Times, serif, sans-serif;
     background-color: #faf9f5;
     text-align: center;
-}   <!-- Create font and coloring for general layout-->
+}   
 
 .container {
     max-width: 1000px;
@@ -13,12 +13,12 @@ body {
     box-shadow: 0 0 10px rgba(187, 187, 187, 0.1);
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;  <!--General background of primary intro-->
+    justify-content: center;  
 }
 nav {
     font-style: italic;
     font-size:large;
-    background-color:maroon;   <!--Basic Nav (upper file) styling-->
+    background-color:maroon;  
     display:block;
     display:flex;
     padding:30px;
@@ -32,7 +32,7 @@ h1 {
 }
 table,th,td{
     border:1.5px solid #36454F;
-    padding:10px;   <!--General styling for objects-->
+    padding:10px;  
     border-collapse: collapse;
     margin:5px;
 }
@@ -48,5 +48,5 @@ a{
 a:hover{
     color:gray;   
 }
- <!--May add IDS later-->
+
 

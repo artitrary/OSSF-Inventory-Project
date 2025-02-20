@@ -1,48 +1,46 @@
 <!DOCTYPE html>
-<html lang="en"> //swap to english
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Database</title>
-    <link href="style.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-</head> //link to font ^
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head> 
 <body>
-    <nav> // Yet to attain full page layout
-            <a href="#maintenence" class="link">Maintenence</a> //links to other pages
-            <a href="#system" class="link">System</a> //system
-            <a href="#pump" class="link">Pump</a> //the pump file
-            <a href="#section" class="link">Schedule</a> //
-            <a href="#project" class="link">Project</a>
+    <nav> 
+        <a href="#maintenance" class="link">Maintenance</a> 
+        <a href="#system" class="link">System</a>
+        <a href="#pump" class="link">Pump</a> 
+        <a href="#schedule" class="link">Schedule</a> 
+        <a href="#project" class="link">Project</a>
     </nav>
+    
     <div class="container">
         <h1>Database Frontend Prototype</h1>
+        
         <table>
             <thead>
-                <tr>   //table for maintenence - styled to user request, primary layout below
-                    <th colspan="5">Maintenence</th>
+                <tr>
+                    <th colspan="6">Maintenance</th>
                 </tr>
                 <tr>
+                    <th>MaintenanceID</th>
                     <th>SystemID</th>
                     <th>ProjectID</th>
-                    <th>Date</th>
+                    <th>Maintenance Date</th>
                     <th>Description</th>
                     <th>ScheduleID</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="data-table">
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td colspan="6">Loading data...</td>
                 </tr>
             </tbody>
-        </table> //end of layout
+        </table> 
     </div>
-    
-    
 </body>
 </html>
