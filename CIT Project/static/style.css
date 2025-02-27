@@ -1,0 +1,54 @@
+body {
+    font-family: Montserrat, Times, serif, sans-serif;
+    background-color: #faf9f5;
+    text-align: center;
+}   
+.all{
+    max-width: 1000px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(187, 187, 187, 0.1);
+}
+.container {
+   
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;  
+    gap:10px;
+}
+nav {
+    font-style: italic;
+    font-size:large;
+    background-color:maroon;  
+    display:block;
+    display:flex;
+    padding:30px;
+    justify-content: space-evenly;
+    margin:-10px;
+    
+}
+
+h1 {
+    color: maroon;
+}
+table,th,td{
+    border:1.5px solid #36454F;
+    padding:10px;  
+    border-collapse: collapse;
+    margin:5px;
+}
+td,th{
+    color:#36454F;
+}
+
+a{
+    text-decoration: none;
+    font-style: normal;
+    color:white;
+}
+a:hover{
+    color:gray;   
+}
+

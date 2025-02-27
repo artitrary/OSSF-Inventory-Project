@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Database</title>
+    <link href="../static/style.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <script src="../static/script.js" defer></script>
+    <scripc src=""
+</head> 
+<body>
+    <nav> 
+        <a href="Maintenance.html" class="link">Maintenance</a> 
+        <a href="System.html" class="link">System</a>
+        <a href="Pump.html" class="link">Pump</a> 
+        <a href="Schedule.html" class="link">Schedule</a> 
+        <a href="Project.html" class="link">Project</a>
+    </nav>
+    <div class="all">
+        <h1>Database Frontend Prototype</h1>
+        <div class="container">
+
+            <div class="inputs">
+                <label for="searchpump">Search by PumpName</label>
+                <input type="text" id="searchpump">
+            </div>
+            <div class="inputs">
+                <label for="searchproj">Search by ProjectName</label>
+                <input type="text" id="searchproj">
+            </div>
+            <div class="inputs">
+                <label for="searchschedule">Search by ScheduleID</label>
+                <input type="text" id="searchschedule">
+            </div>
+            <select id="table" placeholder="table">
+                <option disabled selected>Table</option>
+                <option value="addtable">Add</option>
+                <option value="deletetable">Delete</option>
+            </select>
+            <select id="row">
+                <option disabled selected>Rows</option>
+                <option value="addrow">Add</option>
+                <option value="deleterow">Delete</option>
+                <option value="changerow">Change</option>
+            </select>
+            <button id="implement">Implement Action (for dropdown)</button>
+            <div id="jsinput">
+    
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="6">Maintenance</th>
+                    </tr>
+                    <tr>
+                        <th>MaintenanceID</th>
+                        <th>SystemID</th>
+                        <th>ProjectID</th>
+                        <th>Maintenance Date</th>
+                        <th>Description</th>
+                        <th>ScheduleID</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table">
+                    <tr>
+                        <td colspan="6">Loading data...</td>
+                    </tr>
+                </tbody>
+            </table> 
+        </div>
+    </div>
+    
+</body>
+</html>

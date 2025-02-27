@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Database</title>
+    <link href="../static/style.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+</head> 
+<body>
+    <nav> 
+        <a href="Maintenance.html" class="link">Maintenance</a> 
+        <a href="System.html" class="link">System</a>
+        <a href="Pump.html" class="link">Pump</a> 
+        <a href="Schedule.html" class="link">Schedule</a> 
+        <a href="Project.html" class="link">Project</a>
+    </nav>
+    <div class="all">
+        <div class="container">
+            <h1>Database Frontend Prototype</h1>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="9">System</th>
+                    </tr>
+                    <tr>
+                        <th>SystemID</th>
+                        <th>System Name</th>
+                        <th>Aerator</th>
+                        <th>PumpID</th>
+                        <th>Description</th>
+                        <th>Additional Comp</th>
+                        <th>Manufacturer</th>
+                        <th>GPD</th>
+                        <th>Manual</th>
+                    </tr>
+                </thead>
+                <tbody id="data-table">
+                    <tr>
+                        <td colspan="9">Loading data...</td>
+                    </tr>
+                </tbody>
+            </table> 
+        </div>
+    </div>
+   
+</body>
+</html>
