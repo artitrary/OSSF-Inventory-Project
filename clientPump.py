@@ -8,7 +8,7 @@ response = requests.get(url)
 
 if response.status_code == 200:
     data = response.json()  # Convert response to JSON
-    print("Data from MaintenanceLog:")
+    print("Data from PumpLog:")
     for row in data:
         print(row)
 else:
