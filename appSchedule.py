@@ -18,16 +18,16 @@ def get_connection():
 @app.route("/")
 def index():
     """Render the frontend page."""
-    return render_template("Maintenance.html")  # No data passed here
+    return render_template("Schedule.html")  # No data passed here
 
 @app.route("/get_data", methods=["GET"])
 def get_data():
-    """Fetch all rows from the MaintenanceLog table and return as JSON."""
+    """Fetch all rows from the ScheduleLog table and return as JSON."""
     conn = get_connection()
     cursor = conn.cursor()
 
     # Query the database
-    cursor.execute("SELECT * FROM MaintenanceLog")
+    cursor.execute("SELECT * FROM ScheduleLog")
     columns = [column[0] for column in cursor.description]  # Get column names
     data = [dict(zip(columns, row)) for row in cursor.fetchall()]  # Convert rows to dictionaries
 
