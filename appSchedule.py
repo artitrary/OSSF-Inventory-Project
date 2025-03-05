@@ -22,12 +22,12 @@ def index():
 
 @app.route("/get_data", methods=["GET"])
 def get_data():
-    """Fetch all rows from the ScheduleLog table and return as JSON."""
+    """Fetch all rows from the Schedule table and return as JSON."""
     conn = get_connection()
     cursor = conn.cursor()
 
     # Query the database
-    cursor.execute("SELECT * FROM ScheduleLog")
+    cursor.execute("SELECT * FROM Schedule")
     columns = [column[0] for column in cursor.description]  # Get column names
     data = [dict(zip(columns, row)) for row in cursor.fetchall()]  # Convert rows to dictionaries
 
