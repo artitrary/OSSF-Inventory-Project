@@ -8,7 +8,7 @@ response = requests.get(url)
 
 if response.status_code == 200:
     data = response.json()  # Convert response to JSON
-    print("Data from ScheduleLog:")
+    print("Data from Schedule:")
     for row in data:
         print(row)
 else:
