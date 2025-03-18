@@ -11,22 +11,37 @@
 </head> 
 <body>
     <nav> 
-        <a href="Maintenance.html" class="link">Maintenance</a> 
-        <a href="System.html" class="link">System</a>
-        <a href="Pump.html" class="link">Pump</a> 
-        <a href="Schedule.html" class="link">Schedule</a> 
-        <a href="Project.html" class="link">Project</a>
+        <a href="{{ url_for('home') }}" class="link">Maintenance</a> 
+        <a href="{{ url_for('system') }}" class="link">System</a>
+        <a href="{{ url_for('pump') }}" class="link">Pump</a> 
+        <a href="{{ url_for('schedule') }}" class="link">Schedule</a> 
+        <a href="{{ url_for('project') }}" class="link">Project</a>
+
     </nav>
+
     <div class="all">
+        <h1>Database Frontend Prototype</h1>
+
         <div class="container">
-            <h1>Database Frontend Prototype</h1>
-            
+            <div class="clickables">
+                <select id="pumprow">
+                    <option disabled selected>Rows</option>
+                    <option value="addrow">Add</option>
+                    <option value="changerow">Change</option>
+                </select>
+                    <button id="pumpimplement">Implement Action (for dropdown)</button>
+                    <button id="pumpdelete">Delete</button>
+                <div id="pumpjsinput">
+        
+                </div>
+            </div>
             <table>
                 <thead>
                     <tr>
-                        <th colspan="6">Pump</th>
+                        <th colspan="7">Pump</th>
                     </tr>
                     <tr>
+                        <th>Select</th>
                         <th>PumpID</th>
                         <th>Model</th>
                         <th>Quantity</th>
@@ -35,7 +50,7 @@
                         <th>Manual</th>
                     </tr>
                 </thead>
-                <tbody id="data-table">
+                <tbody id="pump-data">
                     <tr>
                         <td colspan="6">Loading data...</td>
                     </tr>

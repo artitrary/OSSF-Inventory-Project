@@ -10,31 +10,46 @@
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head> 
 <body>
-    <<nav> 
-        <a href="Maintenance.html" class="link">Maintenance</a> 
-        <a href="System.html" class="link">System</a>
-        <a href="Pump.html" class="link">Pump</a> 
-        <a href="Schedule.html" class="link">Schedule</a> 
-        <a href="Project.html" class="link">Project</a>
-    </nav>
-    <div class="all">
-        <h1>Database Frontend Prototype</h1>
+    <nav> 
+        <a href="{{ url_for('home') }}" class="link">Maintenance</a> 
+        <a href="{{ url_for('system') }}" class="link">System</a>
+        <a href="{{ url_for('pump') }}" class="link">Pump</a> 
+        <a href="{{ url_for('schedule') }}" class="link">Schedule</a> 
+        <a href="{{ url_for('project') }}" class="link">Project</a>
 
+    </nav>
+    <h1>Database Frontend Prototype</h1>
+
+    <div class="all">
+        <div class="clickables">
+                    
+            <select id="schedulerow">
+                <option disabled selected>Rows</option>
+                <option value="addrow">Add</option>
+                <option value="changerow">Change</option>
+            </select>
+                <button id="scheduleimplement">Implement Action (for dropdown)</button>
+                <button id="scheduledelete">Delete</button>
+            <div id="schedulejsinput">
+    
+            </div>
+        </div>
         <div class="container">
-            <table>
+            <table id="scheduletable">
                 <thead>
                     <tr>
-                        <th colspan="3">Schedule</th>
+                        <th colspan="4">Schedule</th>
                     </tr>
                     <tr>
+                        <th>Select</th>
                         <th>ScheduleID</th>
                         <th>Date</th>
                         <th>Description</th>
                     </tr>
                 </thead>
-                <tbody id="data-table">
+                <tbody id="schedule-data">
                     <tr>
-                        <td colspan="6">Loading data...</td>
+                        <td colspan="4">Loading data...</td>
                     </tr>
                 </tbody>
             </table> 
