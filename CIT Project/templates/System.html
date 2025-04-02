@@ -7,7 +7,6 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head> 
 <body>
     <nav> 
@@ -20,11 +19,11 @@
     </nav>
     
     <div class="all">
-        <h1>Database Frontend Prototype</h1>
+        <h1>System</h1>
         
         <div class="container">
             <div class="clickables">
-                    
+                
                 <select id="systemrow">
                     <option disabled selected>Rows</option>
                     <option value="addrow">Add</option>
@@ -36,32 +35,21 @@
         
                 </div>
             </div>
-            <table>
+            <table id="systemtable">
                 <thead>
-                    <tr>
-                        <th colspan="19">System</th>
-                    </tr>
-                    <tr>
+                    <tr id="system-header-row">
                         <th>Select</th>
-                        <th>SystemID</th>
-                        <th>System Name</th>
-                        <th>Aerator</th>
-                        <th>PumpID</th>
-                        <th>Description</th>
-                        <th>Additional Comp</th>
-                        <th>Manufacturer</th>
-                        <th>GPD</th>
-                        <th>Manual</th>
                     </tr>
                 </thead>
                 <tbody id="system-data">
                     <tr>
-                        <td colspan="10">Loading data...</td>
+                        <td colspan="7">Loading data...</td>
                     </tr>
                 </tbody>
-            </table> 
+            </table>
         </div>
     </div>
-   
+    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+
 </body>
 </html>

@@ -58,3 +58,11 @@ button{
 .clickables{
     margin-right:90px;
 }
+
+#systemtable{
+    padding:5px;
+    font-size: 10px;
+}
+.inputs{
+    margin:5px;
+}

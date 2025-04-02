@@ -20,7 +20,7 @@
 
     </nav>
     <div class="all">
-        <h1>Database Frontend Prototype</h1>
+        <h1>Maintenance</h1>
         <div class="container">
             <div id="clickables">
                     <label for="startDate">Start Date:</label>
@@ -45,11 +45,7 @@
                     <input type="text" id="searchschedule">
                 </div>
                 <button id="searchmaintenance">Search by Pump/Proj/Schedule</button>
-                <select id="table" placeholder="table">
-                    <option disabled selected>Table</option>
-                    <option value="addtable">Add</option>
-                    <option value="deletetable">Delete</option>
-                </select>
+                
                 <select id="row">
                     <option disabled selected>Rows</option>
                     <option value="addrow">Add</option>
@@ -59,23 +55,47 @@
                 <div id="mjsinput">
         
                 </div>
+                <form id="addColumnForm">
+                    <!-- Dropdown for selecting the table -->
+                    <label for="tableName">Select Table:</label>
+                    <select id="tableName" required>
+                        <option value="maintenancelog">MaintenanceLog</option>
+                        <option value="project">Project</option>
+                        <option value="system">System</option>
+                        <option value="schedule">Schedule</option>
+                        <option value="pump">Pump</option>
+                    </select>
+                    <br><br>
+            
+                    <!-- Input for column name -->
+                    <label for="columnName">Column Name:</label>
+                    <input type="text" id="columnName" required>
+                    <br><br>
+            
+                    <!-- Dropdown for selecting column type -->
+                    <label for="columnType">Column Type:</label>
+                    <select id="columnType" required>
+                        <option value="VARCHAR">VARCHAR</option>
+                        <option value="INT">INT</option>
+                        <option value="TEXT">TEXT</option>
+                    </select>
+                    <br><br>
+            
+                    <!-- Submit Button -->
+                    <button type="button" onclick="addColumn()">Add Column</button>
+                </form>
+                <div id="responseMessage"></div>
+
             </div>
 
             <div>
             <br>
             <table>
                 <thead>
-                    <tr>
-                        <th colspan="7">Maintenance</th>
-                    </tr>
-                    <tr>
-                        <th>Select</th>
-                        <th>MaintenanceID</th>
-                        <th>SystemID</th>
-                        <th>ProjectID</th>
-                        <th>Maintenance Date</th>
-                        <th>Description</th>
-                        <th>ScheduleID</th>
+
+                    <tr id="maintenance-header-row">
+                        <th>Select</th> <!-- This one will be static, for the checkbox -->
+                        <!-- Dynamic headers will be inserted here by JavaScript -->
                     </tr>
                 </thead>
                 <tbody id="maintenance-data">
@@ -83,7 +103,7 @@
                         <td colspan="7">Loading data...</td>
                     </tr>
                 </tbody>
-            </table> 
+            </table>
         </div>
     </div>
     

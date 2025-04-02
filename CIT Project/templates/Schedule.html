@@ -18,11 +18,17 @@
         <a href="{{ url_for('project') }}" class="link">Project</a>
 
     </nav>
-    <h1>Database Frontend Prototype</h1>
 
     <div class="all">
+        <h1>Schedule</h1>
+
         <div class="clickables">
-                    
+            <div class="inputs">
+                <label for="searchdate">Search by Month</label>
+                <input type="text" id="searchdate">
+                <button id="clickdate">Search</button>
+
+            </div>
             <select id="schedulerow">
                 <option disabled selected>Rows</option>
                 <option value="addrow">Add</option>
@@ -37,14 +43,7 @@
         <div class="container">
             <table id="scheduletable">
                 <thead>
-                    <tr>
-                        <th colspan="4">Schedule</th>
-                    </tr>
-                    <tr>
-                        <th>Select</th>
-                        <th>ScheduleID</th>
-                        <th>Date</th>
-                        <th>Description</th>
+                    <tr id="schedule-header-row">
                     </tr>
                 </thead>
                 <tbody id="schedule-data">
@@ -53,6 +52,7 @@
                     </tr>
                 </tbody>
             </table> 
+
         </div>
     </div>
     

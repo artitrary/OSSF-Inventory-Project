@@ -16,11 +16,9 @@
         <a href="{{ url_for('pump') }}" class="link">Pump</a> 
         <a href="{{ url_for('schedule') }}" class="link">Schedule</a> 
         <a href="{{ url_for('project') }}" class="link">Project</a>
-
     </nav>
-
     <div class="all">
-        <h1>Database Frontend Prototype</h1>
+        <h1>Pump</h1>
 
         <div class="container">
             <div class="clickables">
@@ -35,27 +33,18 @@
         
                 </div>
             </div>
-            <table>
+            <table id="pumptable">
                 <thead>
-                    <tr>
-                        <th colspan="7">Pump</th>
-                    </tr>
-                    <tr>
+                    <tr id="pump-header-row">
                         <th>Select</th>
-                        <th>PumpID</th>
-                        <th>Model</th>
-                        <th>Quantity</th>
-                        <th>Part Number</th>
-                        <th>Brand</th>
-                        <th>Manual</th>
                     </tr>
                 </thead>
                 <tbody id="pump-data">
                     <tr>
-                        <td colspan="6">Loading data...</td>
+                        <td colspan="7">Loading data...</td>
                     </tr>
                 </tbody>
-            </table> 
+            </table>
         </div>
     </div>
     

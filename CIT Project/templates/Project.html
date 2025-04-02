@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
-    <script src="{{ url_for('static', filename='script.js') }}" defer></script>
+    <script src="../static/script.js" defer></script>
 </head> 
 <body>
     <nav> 
@@ -16,49 +16,39 @@
         <a href="{{ url_for('pump') }}" class="link">Pump</a> 
         <a href="{{ url_for('schedule') }}" class="link">Schedule</a> 
         <a href="{{ url_for('project') }}" class="link">Project</a>
-
     </nav>
     <div class="all">
-        <h1>Database Frontend Prototype</h1>  
-
+        <h1>Project</h1>
         <div class="container">
-            <div class="container">
-                <div class="clickables">
-                    
-                    <select id="projectrow">
-                        <option disabled selected>Rows</option>
-                        <option value="addrow">Add</option>
-                        <option value="changerow">Change</option>
-                    </select>
-                        <button id="projectimplement">Implement Action (for dropdown)</button>
-                        <button id="projectdelete">Delete</button>
-                    <div id="jsinput">
-            
-                    </div>
-                </div>
-            <table id="projectable">
-                <thead>
-                    <tr>
-                        <th colspan="7">Project</th>
-                    </tr>
-                    <tr>
-                        <th>Select</th>
-                        <th>ProjectID</th>
-                        <th>ProjectName</th>
-                        <th>Description</th>
-                        <th>Funded</th>
-                        <th>StartDate</th>
-                        <th>EndDate</th>
-                    </tr>
-                </thead>
-                <tbody id="project-data">
-                    <tr>
-                        <td colspan="7">Loading data...</td>
-                    </tr>
-                </tbody>
-            </table> 
+            <div id="clickables">
+               
+                
+                <select id="projectrow">
+                    <option disabled selected>Rows</option>
+                    <option value="addrow">Add</option>
+                    <option value="changerow">Change</option>
+                </select>
+                <button id="projectimplement">Implement Action (for dropdown)</button>
+                <button id="projectdelete">Delete</button>
+                <div id="projectjsinput"></div>
+                
+            </div>
+            <div>
+                <br>
+                <table id="projecttable">
+                    <thead>
+                        <tr id="project-header-row">
+                            <th>Select</th>
+                        </tr>
+                    </thead>
+                    <tbody id="project-data">
+                        <tr>
+                            <td colspan="7">Loading data...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
-    
 </body>
 </html>
