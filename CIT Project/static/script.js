@@ -1670,47 +1670,29 @@ function addColumn() {
 }
 
 function filterByMonth() {
-    const mRows=document.getElementById('scheduletable').querySelectorAll("tr");
-    const scheduleValue=document.getElementById('searchdate').value;
-    if (scheduleValue !== "") {
-        // Convert the user input (e.g., 'March') to a month index (0 = January, ..., 11 = December)
-        const months = {
-            january: 0, february: 1, march: 2, april: 3, may: 4,
-            june: 5, july: 6, august: 7, september: 8, october: 9,
-            november: 10, december: 11
-        };
+    const mRows = document.getElementById('scheduletable').querySelectorAll("tr");
+    const scheduleValue = document.getElementById('searchdate').value;
 
-        const lowerScheduleValue = scheduleValue.toLowerCase().trim(); // Normalize user input
-        const inputMonth = months[lowerScheduleValue]; // Get the corresponding month index
+    if (scheduleValue !== "" && scheduleValue !== "Select a month") {
+        const inputMonth = parseInt(scheduleValue, 10); // Convert dropdown value to an integer
 
-        // If the month is invalid, exit
-        if (inputMonth === undefined) {
-            alert("Please enter a valid month (e.g., 'March')");
-            return;
-        }
-
-        // Loop through maintenance rows and check if the month matches
+        // Loop through schedule rows and check if the month matches
         for (let i = 0; i < mRows.length; i++) {
             const mRow = mRows[i];
-            const rowDate = mRow.children[2].textContent; // Assuming the schedule date is in the 7th column (index 6)
-            if (i === 0) {
-                continue; // Skip the header row
-            }
-            // Convert the row's date to a Date object
-            const rowDateObj = new Date(rowDate);
+            if (i === 0) continue; // Skip header row
 
-            // Get the month from the row's date
+            const rowDate = mRow.children[2]?.textContent; // Ensure the correct column is used
+            if (!rowDate) continue;
+
+            const rowDateObj = new Date(rowDate);
             const rowMonth = rowDateObj.getMonth();
 
             // Show or hide rows based on matching month
-            if (rowMonth === inputMonth) {
-                mRow.style.display = ''; // Show row if the months match
-            } else {
-                mRow.style.display = 'none'; // Hide row if the months don't match
-            }
+            mRow.style.display = rowMonth === inputMonth ? '' : 'none';
         }
     }
 }
+
 
 
 
@@ -1785,4 +1767,3 @@ document.addEventListener("DOMContentLoaded", function () {
         searchDate.addEventListener('click',filterByMonth);
     }
 });
-
