@@ -1,11 +1,6 @@
-const mtable = document.getElementById('maintenance-data');
-const d=document.getElementById('mjsinput');
-console.log("Checking button:", document.getElementById('projectdelete')); 
-
+//when page is loaded
 document.addEventListener("DOMContentLoaded", function () {
-
-    // Fetch Maintenance Logs
-    // Fetch and populate data dynamically for all tables
+    //fetch and populate data dynamically for all tables
     const fetchData = (endpoint, tableBodyId, headerRowId) => {
         fetch(endpoint)
             .then(response => response.json())
@@ -14,53 +9,59 @@ document.addEventListener("DOMContentLoaded", function () {
                 const headerRow = document.getElementById(headerRowId);
                 const columns = data.columns;
                 const rows = data.data;
-    
-                // Clear existing content
+
+                //clear existing content
                 tableBody.innerHTML = "";
                 headerRow.innerHTML = `<th>Select</th>`; // Add "Select" header
-    
-                // Create headers dynamically
+
+                //crate headers dynamically based on flask
                 columns.forEach(col => {
                     const th = document.createElement("th");
                     th.innerHTML = col;
                     headerRow.appendChild(th);
                 });
-    
-                // Populate rows dynamically
+
+                //populate rows dynamically
                 rows.forEach(row => {
                     const tr = document.createElement("tr");
-    
+
                     // Checkbox column
                     const checkboxCell = document.createElement("td");
                     const checkbox = document.createElement("input");
                     checkbox.type = "checkbox";
-
                     checkbox.classList.add("row-checkbox");
 
-                    checkbox.setAttribute("data-project-id", row['projectid']);    // Set data-project-id with the ProjectID
-                    checkbox.setAttribute("data-system-id", row['systemid']);      // Set data-system-id with the SystemID
-                    checkbox.setAttribute("data-pump-id", row['pumpid']);        // Set data-pump-id with the PumpID
-                    checkbox.setAttribute("data-schedule-id", row['scheduleid']); // Set data-schedule-id with the ScheduleID
-
+                    //stores the id for each table in that checkbox
+                    checkbox.setAttribute("data-project-id", row['projectid']);
+                    checkbox.setAttribute("data-system-id", row['systemid']);
+                    checkbox.setAttribute("data-pump-id", row['pumpid']);
+                    checkbox.setAttribute("data-schedule-id", row['scheduleid']);
                     checkboxCell.appendChild(checkbox);
                     tr.appendChild(checkboxCell);
-    
-                    // Data columns
+
+                    //makes pdf columns into links
                     columns.forEach(col => {
                         const td = document.createElement("td");
-                        td.innerHTML = row[col] !== null ? row[col] : '';
+                        if (col === "manualname") {
+                            const fileName = `${row[col]}.pdf`; 
+                            td.innerHTML = `<a href="/static/pdfs/${fileName}" download>${fileName}</a>`; // Link to the .pdf file
+                        } else {
+                            //sets td to the manualname unless null, then just blank spring
+                            td.innerHTML = row[col] !== null ? row[col] : '';
+                        }
                         tr.appendChild(td);
                     });
-    
+
                     tableBody.appendChild(tr);
                 });
             })
+            //catches any errors into the console if necessary and says data has errors loading
             .catch(error => {
                 console.error(`Error loading data from ${endpoint}:`, error);
                 document.getElementById(tableBodyId).innerHTML = `<tr><td colspan="10">Error loading data.</td></tr>`;
             });
     };
-    
+
     // Fetch data for all tables
     fetchData("/get_maintenance_data", "maintenance-data", "maintenance-header-row");
     fetchData("/get_system_data", "system-data", "system-header-row");
@@ -70,11 +71,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
+//all data needed from the tables
 let projectData = [];
 let pumpData = [];
 let systemData = [];
 let scheduleData = [];
-// Fetch Pump Data
+
+//waits till it can get info of table from the flask and stores it in the array
+//fetch pump data
 async function fetchPumpData() {
     if (pumpData.length === 0) {
         try {
@@ -88,7 +92,7 @@ async function fetchPumpData() {
     return pumpData;
 }
 
-// Fetch System Data
+//fetch system data
 async function fetchSystemData() {
     if (systemData.length === 0) {
         try {
@@ -102,16 +106,15 @@ async function fetchSystemData() {
     return systemData;
 }
 
+//fetch schedule data
+//gets schedule data
 async function fetchScheduleData() {
     if (!scheduleData || !scheduleData.data || scheduleData.data.length === 0) {
         try {
             const response = await fetch("/get_schedule_data");
             const data = await response.json();
-            console.log("Fetched schedule data (raw):", data); // Log the raw data
-
             if (data.columns && data.data) {
                 scheduleData = data;
-                console.log("Schedule data loaded successfully:", scheduleData);
                 generateScheduleRows(scheduleData); // Call to generate the rows
             } else {
                 console.error("Fetched data does not have the expected structure:", data);
@@ -122,30 +125,38 @@ async function fetchScheduleData() {
     }
 }
 
+//gets project data
 async function fetchProjectData() {
-    if (projectData.length === 0) {  // Only fetch if data is empty
+    if (projectData.length === 0) {  
         try {
             const response = await fetch("/get_project_data");
             projectData = await response.json();
-            console.log("Fetched project data:", projectData);
-
-            
+            console.log("Fetched project data:", projectData);            
         } catch (error) {
             alert("Error loading project data.");
         }
-    } else {
-    }
+    } 
     return projectData; // Return the fetched data
 }
+
+//ensures schedule data is fetched at beginning
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Page loaded, calling fetchScheduleData()...");
+    fetchScheduleData();
+});
+
+
+//sets schedule table separately so that later functions can easily access data
 function generateScheduleRows(scheduleData) {
     console.log("Generating schedule rows...");
     
-    // Check if scheduleData is valid
+    //checks if scheduleData is valid
     if (!scheduleData || !scheduleData.columns || !scheduleData.data || scheduleData.data.length === 0) {
         console.error("Invalid schedule data received:", scheduleData);
         return;
     }
 
+    //checks if table exists
     const tableBody = document.getElementById("schedule-data");
     if (!tableBody) {
         console.error("Table body not found!");
@@ -155,47 +166,47 @@ function generateScheduleRows(scheduleData) {
     const columns = scheduleData.columns;
     const rows = scheduleData.data;
 
-    // Clear existing content
+    //clears existing content
     tableBody.innerHTML = "";
 
-    // Generate table headers dynamically
+    //geneates table headers dynamically
     const headerRow = document.getElementById("schedule-header-row");
     headerRow.innerHTML = "";
 
-    // Add a checkbox header
+    //adds a checkbox header
     const checkboxHeader = document.createElement("th");
     checkboxHeader.innerText = "Select";
     headerRow.appendChild(checkboxHeader);
 
-    // Add dynamic headers based on the columns
+    //adds dynamic headers based on the columns
     columns.forEach(col => {
         const th = document.createElement("th");
         th.innerText = col;
         headerRow.appendChild(th);
     });
 
-    // Generate rows dynamically
+    //geneates rows dynamically
     rows.forEach(entry => {
         const tr = document.createElement("tr");
         tr.id = `schedule-row-${entry.scheduleid}`;
 
-        // Add checkbox to the row
+        //adds checkbox to the row
         const tdCheckbox = document.createElement("td");
         const checkbox = document.createElement("input");
         checkbox.type = "checkbox";
         tdCheckbox.appendChild(checkbox);
         tr.appendChild(tdCheckbox);
 
-        // Add data for each column in the row
+        //adds data for each column in the row
         columns.forEach(col => {
             const td = document.createElement("td");
 
-            // Handle the date column with a special class
+            //handles the date column with specific class
             if (col === "date") {
-                td.className = "schedule-date"; // Add a class for the date column
-                td.innerText = entry[col] || "";  // Set the date value (empty if not available)
+                td.className = "schedule-date"; //add a class for the date column
+                td.innerText = entry[col] || "";  //or set it empty
             } else {
-                td.innerText = entry[col] || "";  // Set other values
+                td.innerText = entry[col] || "";  //does for the rest of the columns
             }
 
             tr.appendChild(td);
@@ -203,88 +214,93 @@ function generateScheduleRows(scheduleData) {
 
         tableBody.appendChild(tr);
     });
-
-    console.log("Rows generated.");
-    schedule(); // Call to apply color coding on rows
+    schedule(); //call to apply color coding on rows
 }
 
-
+//colorcodes schedule data
 function schedule() {
+    //checks if schedule data exists
     if (!scheduleData || !scheduleData.data || scheduleData.data.length === 0) {
         console.log("No schedule data available.");
         return;
     }
 
+    //set time to 00:00:00 for comparison
     let date = new Date();
-    date.setHours(0, 0, 0, 0);  // Set time to 00:00:00 for comparison
-    console.log("Today's date:", date);
+    date.setHours(0, 0, 0, 0);  
 
-    // Loop through the schedule data (accessing the 'data' property of scheduleData)
+    //loop through the schedule data
     scheduleData.data.forEach(entry => {
-        console.log("Processing schedule entry:", entry);
-
-        // Ensure the entry has the expected properties
+        //ensure data is id or date
         if (!entry.scheduleid || !entry.date) {
             console.error("Invalid schedule entry:", entry);
             return;
         }
 
+        //makes that talbe value into a date and checks if it is
         const scheduleDate = new Date(entry.date);
         if (isNaN(scheduleDate)) {
             console.error("Invalid date format for entry:", entry);
             return;
         }
 
+        //accesses the id of schedule row found in the first fetch method
         const row = document.getElementById(`schedule-row-${entry.scheduleid}`);
         if (!row) {
             console.log(`Row for ScheduleID ${entry.scheduleid} not found.`);
             return;
         }
 
+        //gets the specific element 
         const dateCellElement = row.querySelector('.schedule-date');
         if (!dateCellElement) {
             console.log(`Date cell for ScheduleID ${entry.scheduleid} not found.`);
             return;
         }
 
-        console.log("Comparing with date:", scheduleDate);
-
+        //sets colors red/yellow if 5 days later
         if (scheduleDate < date) {
-            dateCellElement.style.backgroundColor = "rgb(255, 42, 46)"; // Red
-            console.log(`Date is earlier than today, set to red: ${entry.scheduleid}`);
+            dateCellElement.style.backgroundColor = "rgb(255, 42, 46)"; //red
         } else if (scheduleDate <= new Date(date.getTime() + 5 * 24 * 60 * 60 * 1000)) {
-            dateCellElement.style.backgroundColor = "rgb(248, 203, 46)"; // Yellow
-            console.log(`Date is within the next 5 days, set to yellow: ${entry.scheduleid}`);
+            dateCellElement.style.backgroundColor = "rgb(248, 203, 46)"; //yellow
         }
     });
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-    console.log("Page loaded, calling fetchScheduleData()...");
-    fetchScheduleData();
-});
 
-
+//filter maintenance dates
 function filterData() {
     const table = document.getElementById('maintenance-data');
-    const rows = table.querySelectorAll("tr"); // Get all rows in the tbody
+    const rows = table.querySelectorAll("tr");
 
-    const startParts = document.getElementById('startDate').value.split("-");
+    const startInput = document.getElementById('startDate').value;
+    const endInput = document.getElementById('endDate').value;
+
+    if (!startInput || !endInput) return; //prevents errors if date inputs are empty
+
+    //splits up date removing all the dashes and converitng that into a date
+    const startParts = startInput.split("-");
     const start = new Date(startParts[0], startParts[1] - 1, startParts[2]);
     start.setHours(0, 0, 0, 0);
-    console.log("Start:", start);
 
-    const endParts = document.getElementById('endDate').value.split("-");
+
+    const endParts = endInput.split("-");
     const end = new Date(endParts[0], endParts[1] - 1, endParts[2]);
     end.setHours(23, 59, 59, 999);
-    console.log("End:", end);
 
-    for (let i = 0; i < rows.length; i++) { 
+    for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        const logDate = new Date(row.children[4].textContent); 
-        
-        logDate.setHours(0, 0, 0, 0);
-        console.log("Log Date:", logDate);
+        if (i === 0) continue; //skip header row
+
+        const dateText = row.children[4]?.textContent?.trim();
+        if (!dateText) continue; //skip if has no date
+
+        //checks if valid date and sets display accordingly
+        const logDate = new Date(dateText);
+        if (isNaN(logDate)) {
+            row.style.display = 'none';
+            continue;
+        }
 
         if (logDate >= start && logDate <= end) {
             row.style.display = '';
@@ -293,11 +309,12 @@ function filterData() {
         }
     }
 }
-function searchMaintenance() {
-    console.log('what');
-    const mRows = mtable.querySelectorAll("tr");
-    fetchProjectData(); // Ensure project data is loaded
 
+//seraching for project name/pump name/schedule id
+function searchMaintenance() {
+    const mtable = document.getElementById('maintenance-data');
+    const mRows = mtable.querySelectorAll("tr");
+    fetchProjectData(); //ensure project data is loaded
     let pid = null;
     let pumpid=null;
     let systemid=null;
@@ -307,128 +324,146 @@ function searchMaintenance() {
 
 
     if (proj.value !== "") {
-        // Loop through project data to find matching project
-        for (let j = 0; j < projectData.length; j++) {
-            const pRow = projectData[j];
-            if (pRow.ProjectName.toLowerCase() === proj.value.toLowerCase()) {
-                pid = Number(pRow.ProjectID); // Get ProjectID for the matched project name
-                break; // Exit loop once match is found
+        //loop through project data to find matching project
+        for (let j = 0; j < projectData.data.length; j++) {
+            const pRow = projectData.data[j];
+
+            //if name equal to the input of searchbox then get the id
+            if (pRow.projectname.toLowerCase() === proj.value.toLowerCase()) {
+                
+                pid = Number(pRow.projectid); 
+                break; //exit loop once match is found
             }
         }
-        console.log("Project ID found:", pid);
+        
+        //displays rows accordingly
         for (let i = 0; i < mRows.length; i++) {
             const mRow = mRows[i];
             if (Number(mRow.children[3].textContent) === pid) {
-                mRow.style.display = ''; // Show row if ProjectID matches
+                mRow.style.display = ''; 
             } else {
-                mRow.style.display = 'none'; // Hide row if ProjectID doesn't match
+                mRow.style.display = 'none';
             }
         }
     }
 
+     //checks if scheduleid column in maintenace is same and changes display accordingly
     if (schedule.value !== "") {
         console.log("Searching for schedule...");
-        // Filter maintenance rows by ScheduleID
+        //filter maintenance rows by ScheduleID
         for (let i = 0; i < mRows.length; i++) {
             const mRow = mRows[i];
             if (Number(mRow.children[6].textContent) === Number(schedule.value)) {
-                mRow.style.display = ''; // Show row if ScheduleID matches
+                mRow.style.display = ''; 
             } else {
-                mRow.style.display = 'none'; // Hide row if ScheduleID doesn't match
+                mRow.style.display = 'none'; 
             }
         }
     }
 
     if (pump.value !== "") {
         console.log("Searching for pump...");
-        for (let j = 0; j < pumpData.length; j++) {
-            const uRow = pumpData[j];
-            if (uRow.Model.toLowerCase() === pump.value.toLowerCase()) {
-                
-                pumpid = Number(uRow.PumpID); // Get ProjectID for the matched project name
-                break; // Exit loop once match is found
+        for (let j = 0; j < pumpData.data.length; j++) {
+            const uRow = pumpData.data[j];
+
+            //gets pumpid after searching pump name through pump table
+            if (uRow.model.toLowerCase() === pump.value.toLowerCase()) {
+                pumpid = Number(uRow.pumpid); 
+                break; //exit loop once match is found
+            }
+
+        }
+
+        //uses that pumpid to search through systemid with that pumpid
+        for (let j = 0; j < systemData.data.length; j++) {
+            const sRow = systemData.data[j];
+            if (Number(sRow.systemid) === pumpid) {
+                systemid = Number(sRow.systemid); 
+                break; 
             }
         }
-        console.log("Pump ID found:", pid);
-        for (let j = 0; j < systemData.length; j++) {
-            const sRow = systemData[j];
-            if (Number(sRow.SystemID) === pumpid) {
-                systemid = Number(sRow.SystemID); // Get ProjectID for the matched project name
-                break; // Exit loop once match is found
-            }
-        }
+
+        //searches that system id in maintenance
         for (let i = 0; i < mRows.length; i++) {
             const mRow = mRows[i];
             if (Number(mRow.children[2].textContent) === systemid) {
-                mRow.style.display = ''; // Show row if ProjectID matches
+                mRow.style.display = '';
             } else {
-                mRow.style.display = 'none'; // Hide row if ProjectID doesn't match
+                mRow.style.display = 'none';
             }
         }
     }
 }
 
 
-//ADDING MAINTENANCE DATA
-/*
-You want to copy this input elsewhere but change the categoreis accoridnly
-*/
+
 function addMaintenanceInputs() {
+    const d=document.getElementById('mjsinput');
+
     if (document.getElementById('row').value === "addrow") {
+
+        //fetches the name of all columns
         fetch('/get_all_model_columns')
         .then(response => response.json())
         .then(allModelColumns => {
-            // Clear the previous inputs if any
+
+            //clear the previous inputs if any
             d.innerHTML = "";
         
-            // Get only the MaintenanceLog model columns
-            const modelColumns = allModelColumns['MaintenanceLog'];  // Select only MaintenanceLog
+            //get only the MaintenanceLog model columns
+            const modelColumns = allModelColumns['MaintenanceLog'];  
 
             if (!modelColumns) {
                 console.error('MaintenanceLog columns not found!');
                 return;
             }
 
-            // Loop through the model columns and create corresponding input fields
+            //loop through the model columns and create input fields
             for (let columnName in modelColumns) {
                 const columnType = modelColumns[columnName];
 
+                const label = document.createElement('label');
+                label.setAttribute('for', columnName);  //associate label with the input field
+                label.innerHTML = columnName.charAt(0).toUpperCase() + columnName.slice(1);  
+
                 const input = document.createElement('input');
-                input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1); // Capitalize first letter
-                input.id = columnName; // Set the id to the column name
-                input.name = columnName; // Optionally, set the name attribute as well
+                input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1); //capitalizes first letter
+                input.id = columnName; 
+                input.name = columnName; 
 
-                // Handle different types based on columnType
+                //handles different types based on columnType
                 if (columnType.includes('INTEGER') || columnType.includes('INT')) {
-                    input.type = 'number';  // If column is of type Integer, use number input
+                    input.type = 'number';  //column is of type integer, use number input
                 } else if (columnType.includes('DATE')) {
-                    input.type = 'date';  // If column is of type Date, use date input
+                    input.type = 'date';  //column is of type date, use date input
                 } else if (columnType.includes('VARCHAR') || columnType.includes('TEXT')) {
-                    input.type = 'text';  // Default to text for other types like VARCHAR or TEXT
+                    input.type = 'text';  //column is of type varchar/text, use test input
                 } else {
-                    input.type = 'text';  // Default to text for any unknown or unsupported types
+                    input.type = 'text';  //default to text for any unknown or unsupported types
                 }
+                d.appendChild(label);
+                d.appendChild(input); //append the input to the form
+                d.appendChild(document.createElement('br'));
 
-                d.appendChild(input); // Append the input to the form
             }
 
-            // Add the button click handler for submitting the data
+            //onclick to trigger button to add data
             document.getElementById('maintenanceimplement').onclick = function () {
                 let isValid = true;
                 const formData = {};
 
-                // Gather all inputs and check for validity
+                //gather all inputs and check for validity
                 for (let columnName in modelColumns) {
                     const inputValue = document.getElementById(columnName).value;
                     if (!inputValue) {
-                        isValid = false; // If any input is empty, mark as invalid
+                        isValid = false; //if any input is empty, mark as invalid
                         break;
                     }
                     formData[columnName] = inputValue;
                 }
 
+                //triggers addmaintenancedata function only if all data is valid 
                 if (isValid) {
-                    // Submit the form data (you can modify the method and URL as needed)
                     addMaintenanceData(formData);
                 } else {
                     alert('Invalid input. All fields must be filled.');
@@ -439,12 +474,12 @@ function addMaintenanceInputs() {
             console.error('Error fetching model columns:', error);
         });
     }
-
-    
 }
 
+//connects with flask toa dd data to sql
 function addMaintenanceData(data) {
-    // Send data to the backend (modify this function as per your API endpoint)
+
+    //sends to backend
     fetch('/add_maintenance_data', {
         method: 'POST',
         headers: {
@@ -465,184 +500,199 @@ function addMaintenanceData(data) {
     });
 }
 
+//similar process as addmaintenancedata but for project
 function addProjectInputs() {
     const d = document.getElementById('projectjsinput');
-        if (document.getElementById('projectrow').value === "addrow") {
-            fetch('/get_all_model_columns')
-            .then(response => response.json())
-            .then(allModelColumns => {
-                // Clear the previous inputs if any
-                d.innerHTML = "";
-            
-                // Get only the Project model columns
-                const modelColumns = allModelColumns['Project'];  // Select only Project
-    
-                if (!modelColumns) {
-                    console.error('Project columns not found!');
-                    return;
-                }
-    
-                // Loop through the model columns and create corresponding input fields
-                for (let columnName in modelColumns) {
-                    const columnType = modelColumns[columnName];
-    
-                    if (columnName.toLowerCase() === 'projectid') continue;
-
-                    const label = document.createElement('label');
-                    label.setAttribute('for', columnName);  // Associate label with the input field
-                    label.innerHTML = columnName.charAt(0).toUpperCase() + columnName.slice(1);  //
-                    const input = document.createElement('input');
-                    input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1); // Capitalize first letter
-                    input.id = columnName; // Set the id to the column name
-                    input.name = columnName; // Optionally, set the name attribute as well
-                    // Handle different types based on columnType
-                    if (columnType.includes('INTEGER') || columnType.includes('INT')) {
-                        input.type = 'number';
-                    } else if (columnType.includes('DATE')) {
-                        input.type = 'date';
-                    } else if (columnType.includes('BOOLEAN') || columnType.includes('TINYINT(1)')) {
-                        input.value = "true";  // Value when checked
-                    } else {
-                        input.type = 'text'; // Default to text
-                    }
-                
-                    d.appendChild(label); // Append the input to the form
-
-                    d.appendChild(input); // Append the input to the form
-                }
-    
-                // Add the button click handler for submitting the data
-                document.getElementById('projectimplement').onclick = function () {
-                    let isValid = true;
-                    const formData = {};
-    
-                    // Gather all inputs and check for validity
-                    for (let columnName in modelColumns) {
-                        console.log(columnName);
-                        const inputElement = document.getElementById(columnName);
-                        if (inputElement) {
-
-                            const inputValue = inputElement.value;
-                            
-                            if (inputValue) { 
-                                formData[columnName] = inputValue; 
-                            }
-                            
-                        };
-                    }
-                    if (isValid) {
-                        // Submit the form data (you can modify the method and URL as needed)
-                        addProjectData(formData);
-                    } else {
-                        alert('Invalid input. All fields must be filled.');
-                    }
-                };
-            })
-            .catch(error => {
-                console.error('Error fetching model columns:', error);
-            });
-        }
-    }
-    
-    function addProjectData(data) {
-        fetch('/add_project_data', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        })
+    if (document.getElementById('projectrow').value === "addrow") {
+        fetch('/get_all_model_columns')
         .then(response => response.json())
-        .then(responseData => {
-            if (responseData.message) {
-                alert("Project added successfully!");
-                updateTable(); // Refresh the table to show the new row
-            } else {
-                alert("Failed to add project.");
+        .then(allModelColumns => {
+
+            //clear inputs if any
+            d.innerHTML = "";
+        
+            //get only the project model columns
+            const modelColumns = allModelColumns['Project'];  
+
+            if (!modelColumns) {
+                console.error('Project columns not found!');
+                return;
             }
+
+            //loop through the model columns and create  input fields
+            for (let columnName in modelColumns) {
+                const columnType = modelColumns[columnName];
+
+                if (columnName.toLowerCase() === 'projectid') continue;
+
+                const label = document.createElement('label');
+                label.setAttribute('for', columnName);  //associate label with the input field
+                label.innerHTML = columnName.charAt(0).toUpperCase() + columnName.slice(1);  
+
+                const input = document.createElement('input');
+
+                input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1); //capitalize first letter
+                input.id = columnName; //set the id to the column name
+                input.name = columnName; 
+
+                //handle different types based on columnType
+                if (columnType.includes('INTEGER') || columnType.includes('INT')) {
+                    input.type = 'number';
+                } else if (columnType.includes('DATE')) {
+                    input.type = 'date';
+                } else if (columnType.includes('BOOLEAN') || columnType.includes('TINYINT(1)')) {
+                    input.value = "true";  
+                } else {
+                    input.type = 'text';
+                }
+            
+                d.appendChild(label); 
+                d.appendChild(input); 
+                d.appendChild(document.createElement('br'));
+
+            }
+
+            //add onclick to trigger button 
+            document.getElementById('projectimplement').onclick = function () {
+                let isValid = true;
+                const formData = {};
+
+                //gather all inputs and check for validity
+                for (let columnName in modelColumns) {
+                    console.log(columnName);
+                    const inputElement = document.getElementById(columnName);
+                    if (inputElement) {
+
+                        const inputValue = inputElement.value;
+                        
+                        if (inputValue) { 
+                            formData[columnName] = inputValue; 
+                        }
+                        
+                    };
+                }
+
+                //submit the form data only if data is valid
+                if (isValid) {
+                    addProjectData(formData);
+                } else {
+                    alert('Invalid input. All fields must be filled.');
+                }
+            };
         })
         .catch(error => {
-            console.error('Error:', error);
-            //alert("There was an error with the request.");
+            console.error('Error fetching model columns:', error);
         });
     }
+}
     
-    function addSystemInputs() {
-        fetchPumpData(); // Ensure pump data is loaded before checking validity
-        const d = document.getElementById('systemjsinput');
-        if (document.getElementById('systemrow').value === "addrow") {
-            fetch('/get_all_model_columns')
-            .then(response => response.json())
-            .then(allModelColumns => {
-                // Clear the previous inputs if any
-                d.innerHTML = "";
-    
-                // Get only the System model columns
-                const modelColumns = allModelColumns['System'];  // Select only System
-    
-                if (!modelColumns) {
-                    console.error('System columns not found!');
-                    return;
-                }
-    
-                // Loop through the model columns and create corresponding input fields
-                for (let columnName in modelColumns) {
-                    const columnType = modelColumns[columnName];
-                    
-                    if (columnName.toLowerCase() === 'systemid') continue;
-
-                    const input = document.createElement('input');
-                    input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1); // Capitalize first letter
-                    input.id = columnName; // Set the id to the column name
-                    input.name = columnName; // Optionally, set the name attribute as well
-    
-                    // Handle different types based on columnType
-                    if (columnType.includes('INTEGER') || columnType.includes('INT')) {
-                        input.type = 'number';  // If column is of type Integer, use number input
-                    } else if (columnType.includes('DATE')) {
-                        input.type = 'date';  // If column is of type Date, use date input
-                    } else if (columnType.includes('VARCHAR') || columnType.includes('TEXT')) {
-                        input.type = 'text';  // Default to text for other types like VARCHAR or TEXT
-                    } else {
-                        input.type = 'text';  // Default to text for any unknown or unsupported types
-                    }
-    
-                    d.appendChild(input); // Append the input to the form
-                }
-    
-                // Add the button click handler for submitting the data
-                document.getElementById('systemimplement').onclick = function () {
-                    let isValid = true;
-                    const formData = {};
-    
-                    // Gather all inputs and check for validity
-                    for (let columnName in modelColumns) {
-                        console.log(columnName);
-                        const inputElements = document.getElementsByName(columnName);
-                        inputElements.forEach((inputElement) => {
-                            const inputValue = inputElement.value;
-                            
-                            if (!inputValue) {
-                                isValid = false; // If any input is empty, mark as invalid
-                            } else {
-                                formData[columnName] = inputValue; // Store the input value
-                            }
-                        });
-                    }
-    
-                    if (isValid) {
-                        // Submit the form data (you can modify the method and URL as needed)
-                        addSystemData(formData);
-                    } else {
-                        alert('Invalid input. All fields must be filled.');
-                    }
-                };
-            })
-            .catch(error => {
-                console.error('Error fetching model columns:', error);
-            });
+//connects to flask to add data
+function addProjectData(data) {
+    fetch('/add_project_data', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(responseData => {
+        if (responseData.message) {
+            alert("Project added successfully!");
+        } else {
+            alert("Failed to add project.");
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        //alert("There was an error with the request.");
+    });
+}
+
+//adding system inputs
+function addSystemInputs() {
+    const d = document.getElementById('systemjsinput');
+    if (document.getElementById('systemrow').value === "addrow") {
+        fetch('/get_all_model_columns')
+        .then(response => response.json())
+        .then(allModelColumns => {
+
+            //clear the previous inputs if any
+            d.innerHTML = "";
+
+            //get only the system model columns
+            const modelColumns = allModelColumns['System'];  
+
+            if (!modelColumns) {
+                console.error('System columns not found!');
+                return;
+            }
+
+            //loop through the model columns and create  input fields
+            for (let columnName in modelColumns) {
+                const columnType = modelColumns[columnName];
+                
+                if (columnName.toLowerCase() === 'systemid') continue;
+
+                const label = document.createElement('label');
+                label.setAttribute('for', columnName);  //associate label with the input field
+                label.innerHTML = columnName.charAt(0).toUpperCase() + columnName.slice(1);  
+
+                const input = document.createElement('input');
+                input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1); //capitalize first letter
+                input.id = columnName; //set the id to the column name
+                input.name = columnName;
+
+                //handle different types based on columnType
+                if (columnType.includes('INTEGER') || columnType.includes('INT')) {
+                    input.type = 'number';  
+                } else if (columnType.includes('DATE')) {
+                    input.type = 'date'; 
+                } else if (columnType.includes('VARCHAR') || columnType.includes('TEXT')) {
+                    input.type = 'text'; 
+                } else {
+                    input.type = 'text'; 
+                }
+                
+                d.appendChild(label);
+                d.appendChild(input); 
+                d.appendChild(document.createElement('br'));
+
+            }
+
+            //trigger button to add data
+            document.getElementById('systemimplement').onclick = function () {
+                let isValid = true;
+                const formData = {};
+
+                //gather all inputs and check for validity
+                for (let columnName in modelColumns) {
+                    console.log(columnName);
+                    const inputElements = document.getElementsByName(columnName);
+                    inputElements.forEach((inputElement) => {
+                        const inputValue = inputElement.value;
+                        
+                        if (!inputValue) {
+                            isValid = false; 
+                        } else {
+                            formData[columnName] = inputValue; 
+                        }
+                    });
+                }
+                    
+                //submit the form data if all is valid
+                if (isValid) {
+                    addSystemData(formData);
+                } else {
+                    alert('Invalid input. All fields must be filled.');
+                }
+            };
+        })
+        .catch(error => {
+            console.error('Error fetching model columns:', error);
+        });
     }
-    
-    function addSystemData(data) {
+}
+
+function addSystemData(data) {
         fetch('/add_system_data', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -652,7 +702,6 @@ function addProjectInputs() {
         .then(responseData => {
             if (responseData.message) {
                 alert("System added successfully!");
-                updateTable(); // Refresh the table to show the new row
             } else {
                 alert("Failed to add system.");
             }
@@ -661,219 +710,231 @@ function addProjectInputs() {
             console.error('Error:', error);
             //alert("There was an error with the request.");
         });
-    }
+}
     
 
-// Function to create input fields for adding schedule data
+//function to add schedule data and inputs
 function addScheduleInputs() {
-    const d = document.getElementById('schedulejsinput');
-    
-    if (document.getElementById('schedulerow').value === "addrow") {
-        fetch('/get_all_model_columns')
-        .then(response => response.json())
-        .then(allModelColumns => {
-            const d = document.getElementById('schedulejsinput');
-            // Clear previous inputs if any
-            d.innerHTML = "";
+	const d = document.getElementById('schedulejsinput');
+	
+	if (document.getElementById('schedulerow').value === "addrow") {
+		fetch('/get_all_model_columns')
+		.then(response => response.json())
+		.then(allModelColumns => {
+			const d = document.getElementById('schedulejsinput');
 
-            // Get only the Schedule model columns
-            const modelColumns = allModelColumns['Schedule'];  // Select only Schedule
+			//clear previous inputs if any
+			d.innerHTML = "";
 
-            if (!modelColumns) {
-                console.error('Schedule columns not found!');
-                return;
-            }
+			//get only the schedule model columns
+			const modelColumns = allModelColumns['Schedule'];
 
-            // Loop through the model columns and create corresponding input fields
-            for (let columnName in modelColumns) {
-                const columnType = modelColumns[columnName];
+			if (!modelColumns) {
+				console.error('schedule columns not found!');
+				return;
+			}
 
-                if (columnName.toLowerCase() === 'scheduleid') continue;
+			//loop through the model columns and create corresponding input fields
+			for (let columnName in modelColumns) {
+				const columnType = modelColumns[columnName];
 
-                const input = document.createElement('input');
-                input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1); // Capitalize first letter
-                input.id = columnName; // Set the id to the column name
-                input.name = columnName; // Optionally, set the name attribute as well
+				if (columnName.toLowerCase() === 'scheduleid') continue;
 
-                // Handle different types based on columnType
-                if (columnType.includes('INTEGER') || columnType.includes('INT')) {
-                    input.type = 'number';  // If column is of type Integer, use number input
-                } else if (columnType.includes('DATE')) {
-                    input.type = 'date';  // If column is of type Date, use date input
-                } else if (columnType.includes('VARCHAR') || columnType.includes('TEXT')) {
-                    input.type = 'text';  // Default to text for other types like VARCHAR or TEXT
-                } else {
-                    input.type = 'text';  // Default to text for any unknown or unsupported types
-                }
+				const label = document.createElement('label');
+				label.setAttribute('for', columnName);
+				label.innerHTML = columnName.charAt(0).toUpperCase() + columnName.slice(1);
 
-                d.appendChild(input); // Append the input to the form
-            }
+				const input = document.createElement('input');
+				input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1);
+				input.id = columnName;
+				input.name = columnName;
 
-            // Add the button click handler for submitting the data
-            document.getElementById('scheduleimplement').onclick = function () {
-                let isValid = true;
-                const formData = {};
-                // Gather all inputs and check for validity
-                for (let columnName in modelColumns) {
-                    console.log(columnName);
-                    const inputElements = document.getElementsByName(columnName);
-                    inputElements.forEach((inputElement) => {
-                        const inputValue = inputElement.value;
-                        
-                        if (!inputValue) {
-                            isValid = false; // If any input is empty, mark as invalid
-                        } else {
-                            formData[columnName] = inputValue; // Store the input value
-                        }
-                    });
-                }
+				//handle different types based on columntype
+				if (columnType.includes('INTEGER') || columnType.includes('INT')) {
+					input.type = 'number';
+				} else if (columnType.includes('DATE')) {
+					input.type = 'date';
+				} else if (columnType.includes('VARCHAR') || columnType.includes('TEXT')) {
+					input.type = 'text';
+				} else {
+					input.type = 'text';
+				}
 
-                if (isValid) {
-                    // Submit the form data (you can modify the method and URL as needed)
-                    addScheduleData(formData);
-                } else {
-                    alert('Invalid input. All fields must be filled.');
-                }
-            };
-        })
-        .catch(error => {
-            console.error('Error fetching model columns:', error);
-        });
-    }
+				d.appendChild(label);
+				d.appendChild(input);
+				d.appendChild(document.createElement('br'));
+			}
+
+			//add the button  for submitting the data
+			document.getElementById('scheduleimplement').onclick = function () {
+				let isValid = true;
+				const formData = {};
+
+				//gather all inputs and check for validity
+				for (let columnName in modelColumns) {
+					const inputElements = document.getElementsByName(columnName);
+					inputElements.forEach((inputElement) => {
+						const inputValue = inputElement.value;
+						if (!inputValue) {
+							isValid = false;
+						} else {
+							formData[columnName] = inputValue;
+						}
+					});
+				}
+
+				//submit the form data if valid
+				if (isValid) {
+					addScheduleData(formData);
+				} else {
+					alert('invalid input. all fields must be filled.');
+				}
+			};
+		})
+		.catch(error => {
+			console.error('error fetching model columns:', error);
+		});
+	}
 }
 
 function addScheduleData(data) {
-    fetch('/add_schedule_data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(responseData => {
-        if (responseData.message) {
-            alert("Schedule added successfully!");
-            updateTable(); // Refresh the table to show the new row
-        } else {
-            //alert("Failed to add schedule.");
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+	fetch('/add_schedule_data', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(data)
+	})
+	.then(response => response.json())
+	.then(responseData => {
+		if (responseData.message) {
+			alert("schedule added successfully!");
+		}
+	})
+	.catch(error => {
+		console.error('error:', error);
+	});
 }
+
+//adds to pump inputs 
 function addPumpInputs() {
-    const d = document.getElementById('pumpjsinput');
+	const d = document.getElementById('pumpjsinput');
 
-    if (document.getElementById('pumprow').value === "addrow") {
-        fetch('/get_all_model_columns')
-        .then(response => response.json())
-        .then(allModelColumns => {
-            // Clear existing content
-            d.innerHTML = "";
+	if (document.getElementById('pumprow').value === "addrow") {
+		fetch('/get_all_model_columns')
+		.then(response => response.json())
+		.then(allModelColumns => {
 
-            // Get only the Pump model columns
-            const modelColumns = allModelColumns['Pump'];  // Select only Pump
+			//clear existing content
+			d.innerHTML = "";
 
-            if (!modelColumns) {
-                console.error('Pump columns not found!');
-                return;
-            }
+			//get only the pump model columns
+			const modelColumns = allModelColumns['Pump'];
 
-            // Loop through the model columns and create corresponding input fields
-            for (let columnName in modelColumns) {
-                const columnType = modelColumns[columnName];
+			if (!modelColumns) {
+				console.error('pump columns not found!');
+				return;
+			}
 
-                if (columnName.toLowerCase() === 'pumpid') continue;
+			//loop through the model columns and create corresponding input fields
+			for (let columnName in modelColumns) {
+				const columnType = modelColumns[columnName];
 
-                const input = document.createElement('input');
-                input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1); // Capitalize first letter
-                input.id = columnName; // Set the id to the column name
-                input.name = columnName; // Optionally, set the name attribute as well
+				if (columnName.toLowerCase() === 'pumpid') continue;
 
-                // Handle different types based on columnType
-                if (columnType.includes('INTEGER') || columnType.includes('INT')) {
-                    input.type = 'number';  // If column is of type Integer, use number input
-                } else if (columnType.includes('DATE')) {
-                    input.type = 'date';  // If column is of type Date, use date input
-                } else if (columnType.includes('VARCHAR') || columnType.includes('TEXT')) {
-                    input.type = 'text';  // Default to text for other types like VARCHAR or TEXT
-                } else {
-                    input.type = 'text';  // Default to text for any unknown or unsupported types
-                }
+				const label = document.createElement('label');
+				label.setAttribute('for', columnName);
+				label.innerHTML = columnName.charAt(0).toUpperCase() + columnName.slice(1);
 
-                d.appendChild(input); // Append the input to the form
-            }
+				const input = document.createElement('input');
+				input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1);
+				input.id = columnName;
+				input.name = columnName;
 
-            // Add the button click handler for submitting the data
-            document.getElementById('pumpimplement').onclick = function () {
-                let isValid = true;
-                const formData = {};
-                const pumpID = "PUMP-" + new Date().getTime(); // Generate unique PumpID
+				//handle different types based on columntype
+				if (columnType.includes('INTEGER') || columnType.includes('INT')) {
+					input.type = 'number';
+				} else if (columnType.includes('DATE')) {
+					input.type = 'date';
+				} else if (columnType.includes('VARCHAR') || columnType.includes('TEXT')) {
+					input.type = 'text';
+				} else {
+					input.type = 'text';
+				}
 
-                // Gather all inputs and check for validity
-                for (let columnName in modelColumns) {
-                    console.log(columnName);
-                    const inputElements = document.getElementsByName(columnName);
-                    inputElements.forEach((inputElement) => {
-                        const inputValue = inputElement.value;
-                        
-                        if (!inputValue) {
-                            isValid = false; // If any input is empty, mark as invalid
-                        } else {
-                            formData[columnName] = inputValue; // Store the input value
-                        }
-                    });
-                }
+				d.appendChild(label);
+				d.appendChild(input);
+				d.appendChild(document.createElement('br'));
+			}
 
-                if (isValid) {
-                    // Submit the form data (you can modify the method and URL as needed)
-                    formData['PumpID'] = pumpID; // Add the unique PumpID to the form data
-                    addPumpData(formData);
-                } else {
-                    alert('Invalid input. All fields must be filled.');
-                }
-            };
-        })
-        .catch(error => {
-            console.error('Error fetching model columns:', error);
-        });
-    }
+			//add the button click handler for submitting the data
+			document.getElementById('pumpimplement').onclick = function () {
+				let isValid = true;
+				const formData = {};
+				const pumpID = "PUMP-" + new Date().getTime();
+
+				//gather all inputs and check for validity
+				for (let columnName in modelColumns) {
+					const inputElements = document.getElementsByName(columnName);
+					inputElements.forEach((inputElement) => {
+						const inputValue = inputElement.value;
+						if (!inputValue) {
+							isValid = false;
+						} else {
+							formData[columnName] = inputValue;
+						}
+					});
+				}
+
+                //submit form if valid
+				if (isValid) {
+					formData['PumpID'] = pumpID;
+					addPumpData(formData);
+				} else {
+					alert('invalid input. all fields must be filled.');
+				}
+			};
+		})
+		.catch(error => {
+			console.error('error fetching model columns:', error);
+		});
+	}
 }
 
 function addPumpData(data) {
-    fetch('/add_pump_data', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-    })
-    .then(response => response.json())
-    .then(responseData => {
-        if (responseData.message) {
-            alert("Pump data added successfully!");
-            updateTable(); // Refresh the table to show the new row
-        } else {
-            alert("Failed to add pump.");
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
+	fetch('/add_pump_data', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(data)
+	})
+	.then(response => response.json())
+	.then(responseData => {
+		if (responseData.message) {
+			alert("pump data added successfully!");
+		} else {
+			alert("failed to add pump.");
+		}
+	})
+	.catch(error => {
+		console.error('error:', error);
+	});
 }
 
 
 
+//editing current rows for maintenancelog
+function changeMaintenanceData() {
+    const d=document.getElementById('mjsinput');
 
-function updateMaintenanceData() {
     if (document.getElementById('row').value === "changerow") {
-        // Clear any previous inputs
+        //clear any previous inputs
         d.innerHTML = '';
     
-        // Fetch the model columns for all tables and filter for MaintenanceLog
+        //fetch the model columns for all tables and filter for maintenancelog
         fetch('/get_all_model_columns')
             .then(response => response.json())
             .then(allModelColumns => {
-                // Get only the MaintenanceLog columns
-                const columns = allModelColumns['MaintenanceLog'];  // Select only MaintenanceLog columns
+
+                //get only the maintenancelog columns
+                const columns = allModelColumns['MaintenanceLog'];  
 
                 if (!columns) {
                     console.error('MaintenanceLog columns not found!');
@@ -881,56 +942,70 @@ function updateMaintenanceData() {
                     return;
                 }
 
-                // Loop through the columns and create corresponding input fields
-                for (const [columnName, columnType] of Object.entries(columns)) {
-                    const input = document.createElement('input');
-                    input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1);  // Capitalize the first letter of the field name
-                    input.id = columnName;  // Set the ID of the input to match the field name
-                    input.name = columnName;  // Optionally set the name attribute as well
-                
-                    // Set input types based on column type
-                    if (columnType.includes('INTEGER') || columnType.includes('INT')) {
-                        input.type = 'number';  // If column is of type Integer, use number input
-                    } else if (columnType.includes('DATE')) {
-                        input.type = 'date';  // If column is of type Date, use date input
-                    } else if (columnType.includes('VARCHAR') || columnType.includes('TEXT')) {
-                        input.type = 'text';  // Default to text for other types like VARCHAR or TEXT
-                    } else {
-                        input.type = 'text';  // Default to text for any unknown or unsupported types
-                    }
-                
-    
-                    // Append input fields to the form container
-                    d.appendChild(input);
-                    d.appendChild(document.createElement('br'));  // Line break between inputs
-                }
-    
-                // Create the Maintenance ID input field dynamically (or you can have a fixed one in the HTML)
+                // create the maintenancelog id input field dynamically
                 const maintenanceIDInput = document.createElement('input');
                 maintenanceIDInput.type = 'text';
                 maintenanceIDInput.placeholder = 'Enter Maintenance ID';
                 maintenanceIDInput.id = 'maintenanceID';
+
                 d.appendChild(maintenanceIDInput);
+                d.appendChild(document.createElement('br'));
+
+                //loop through the columns and create input fields
+                for (const [columnName, columnType] of Object.entries(columns)) {
+
+                    const label = document.createElement('label');
+                    label.setAttribute('for', columnName);  //associate label with the input field
+                    label.innerHTML = columnName.charAt(0).toUpperCase() + columnName.slice(1);  
+
+                    const input = document.createElement('input');
+                    input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1);  //capitalize the first letter of the field name
+                    input.id = columnName;  
+                    input.name = columnName; 
+                    
+                    
+                    //same process as adding rows
+                    if (columnType.includes('INTEGER') || columnType.includes('INT')) {
+                        input.type = 'number';  
+                    } else if (columnType.includes('DATE')) {
+                        input.type = 'date';  
+                    } else if (columnType.includes('VARCHAR') || columnType.includes('TEXT')) {
+                        input.type = 'text';  
+                    } else {
+                        input.type = 'text';  
+                    }
+                
     
-                // Add the button click handler to update the record
+
+                    //append input fields to the form container
+                    d.appendChild(label);
+                    d.appendChild(input);
+                    d.appendChild(document.createElement('br'));  // Line break between inputs
+                }
+    
+                
+                
+
+
+                //add button to update
                 document.getElementById('maintenanceimplement').onclick = function () {
-                    const maintenanceID = document.getElementById('maintenanceID').value; // Get maintenance ID from dynamic input
+                    const maintenanceID = document.getElementById('maintenanceID').value; 
                     if (!maintenanceID) {
                         alert('Please enter a valid maintenance ID.');
                         return;
                     }
     
-                    const updatedData = { maintenanceID };  // Include the maintenanceID for the update
+                    const updatedData = { maintenanceID }; 
     
-                    // Gather all input values
+                    //gather all input
                     for (const [columnName] of Object.entries(columns)) {
                         const inputValue = document.getElementById(columnName).value;
                         if (inputValue) {
-                            updatedData[columnName] = inputValue;  // Add the value for each field
+                            updatedData[columnName] = inputValue;  
                         }
                     }
     
-                    // Send the updated data to the server
+                    //send the updated data to the server
                     fetch('/update_maintenance_data', {
                         method: 'POST',
                         headers: {
@@ -942,7 +1017,6 @@ function updateMaintenanceData() {
                     .then(responseData => {
                         if (responseData.message) {
                             alert("Maintenance data updated successfully!");
-                            updateTable();  // Optionally refresh the table
                         } else {
                             alert("Failed to update maintenance data.");
                         }
@@ -959,19 +1033,22 @@ function updateMaintenanceData() {
             });
     }
 }
+
+//updating system table rows
 function changeSystemData() {
     const d = document.getElementById('systemjsinput');
     
     if (document.getElementById('systemrow').value === "changerow") {
-        // Clear any previous inputs
+        //clear any previous inputs
         d.innerHTML = '';
 
-        // Fetch the model columns for all tables and filter for System
+        //fetch the model columns for all tables and filter for system
         fetch('/get_all_model_columns')
             .then(response => response.json())
             .then(allModelColumns => {
-                // Get only the System columns
-                const columns = allModelColumns['System'];  // Select only System columns
+
+                //get only the system columns
+                const columns = allModelColumns['System'];  
 
                 if (!columns) {
                     console.error('System columns not found!');
@@ -979,7 +1056,7 @@ function changeSystemData() {
                     return;
                 }
 
-                // Create the System ID input field first
+                //create the systemid input field first
                 const systemIdLabel = document.createElement('label');
                 systemIdLabel.setAttribute('for', 'SystemID');
                 systemIdLabel.innerHTML = 'System ID';
@@ -992,10 +1069,10 @@ function changeSystemData() {
                 d.appendChild(system_id);
                 d.appendChild(document.createElement('br'));
 
-                // Loop through the columns and create corresponding input fields
+                //loop through the columns and create corresponding input fields
                 for (const [columnName, columnType] of Object.entries(columns)) {
                     if (columnName.toLowerCase() === 'systemid') {
-                        continue;  // Skip forming the input field for system_id
+                        continue;  
                     }
                     
                     const label = document.createElement('label');
@@ -1008,7 +1085,7 @@ function changeSystemData() {
                     input.id = columnName;
                     input.name = columnName;
                 
-                    // Set input types based on column type
+                    //set input types based on column type
                     if (columnType.includes('INTEGER') || columnType.includes('INT')) {
                         input.type = 'number';
                     } else if (columnType.includes('DATE')) {
@@ -1019,28 +1096,26 @@ function changeSystemData() {
                         input.type = 'text';
                     }
 
-                    // Append input fields to the form container
                     d.appendChild(input);
                     d.appendChild(document.createElement('br'));
                 }
 
-                // Add the button click handler to update the record
+                //add button to update
                 document.getElementById('systemimplement').onclick = function () {
-                    // First check if SystemID exists and has a value
+                    //checks if systemid exists
                     const systemId = document.getElementById('SystemID');
                     if (!systemId || !systemId.value) {
                         alert('Please enter a valid system ID.');
                         return;
                     }
-
-                    // Create the data object with the system_id in the format expected by the server
+                    
+                    //create object with correct format
                     const updatedData = { system_id: systemId.value };
                     
                     console.log("Starting to gather input values...");
                     
-                    // Gather all input values with proper error handling
+                    //gather all input values with proper error handling
                     for (const columnName in columns) {
-                        // Skip SystemID as we've already handled it
                         if (columnName.toLowerCase() === 'systemid') {
                             continue;
                         }
@@ -1068,7 +1143,7 @@ function changeSystemData() {
                     
                     console.log("Final data to send:", updatedData);
 
-                    // Send the updated data to the server
+                    //send the updated data to the server
                     fetch('/update_system_data', {
                         method: 'POST',
                         headers: {
@@ -1080,7 +1155,6 @@ function changeSystemData() {
                     .then(responseData => {
                         if (responseData.message) {
                             alert("System data updated successfully!");
-                            // Optionally refresh the table
                             fetchSystemData();
                         } else {
                             alert("Failed to update system data.");
@@ -1101,19 +1175,18 @@ function changeSystemData() {
 
 
 
-
-
+//edit project data rows
 function changeProjectData() {
     const d = document.getElementById('projectjsinput');
     
     if (document.getElementById('projectrow').value === "changerow") {
-        d.innerHTML = ''; // Clear any previous inputs
+        d.innerHTML = ''; 
 
-        // Fetch the model columns for all tables and filter for Project
+        //fetch the model columns for all tables and filter for project
         fetch('/get_all_model_columns')
             .then(response => response.json())
             .then(allModelColumns => {
-                const columns = allModelColumns['Project'];  // Select only Project columns
+                const columns = allModelColumns['Project'];  
 
                 if (!columns) {
                     console.error('Project columns not found!');
@@ -1121,23 +1194,23 @@ function changeProjectData() {
                     return;
                 }
 
-                // Add the Project ID input field first
+                //add projectid input box
                 const projectIdLabel = document.createElement('label');
-                projectIdLabel.setAttribute('for', 'project_id');  // Note the snake_case format
+                projectIdLabel.setAttribute('for', 'project_id');  
                 projectIdLabel.innerHTML = 'Project ID';
                 d.appendChild(projectIdLabel);
                 
                 const project_id_input = document.createElement('input');
-                project_id_input.type = 'number';  // Most likely ProjectID is a number
+                project_id_input.type = 'number';  
                 project_id_input.placeholder = 'Enter Project ID';
-                project_id_input.id = 'project_id';  // Using snake_case to match server expectations
+                project_id_input.id = 'project_id';  
                 d.appendChild(project_id_input);
                 d.appendChild(document.createElement('br'));
 
-                // Loop through the columns and create corresponding input fields
+                //loop through the columns and create  input fields
                 for (const [columnName, columnType] of Object.entries(columns)) {
                     if (columnName.toLowerCase() === 'projectid') {
-                        continue;  // Skip forming the input field for project_id
+                        continue; 
                     }
 
                     const label = document.createElement('label');
@@ -1155,9 +1228,9 @@ function changeProjectData() {
                     } else if (columnType.includes('VARCHAR') || columnType.includes('TEXT')) {
                         input.type = 'text';
                     } else if (columnType.includes('BOOLEAN')) {
-                        input.type = 'text'; // Keep as text to handle 'true' or 'false'
+                        input.type = 'text'; 
                     } else {
-                        input.type = 'text';  // Default to text for unsupported types
+                        input.type = 'text';  
                     }
 
                     d.appendChild(label);
@@ -1165,26 +1238,27 @@ function changeProjectData() {
                     d.appendChild(document.createElement('br'));
                 }
 
-                // Add the button click handler to update the record
+                //button handling to update record
                 document.getElementById('projectimplement').onclick = function () {
-                    // First check if project_id exists and has a value
+
+                    //check projectid has value
                     const projectIdElement = document.getElementById('project_id');
                     if (!projectIdElement || !projectIdElement.value) {
                         alert('Project ID is required!');
                         return;
                     }
                     
-                    // Initialize the data object with project_id in the correct format
+                    //initialize object with correct format
                     const updatedData = {
-                        project_id: projectIdElement.value  // Using snake_case as expected by the server
+                        project_id: projectIdElement.value  
                     };
 
                     console.log("Initial data with project_id:", updatedData);
 
-                    // Gather all input values with error handling
+                    //gather all input values with error handling
                     for (const [columnName, columnType] of Object.entries(columns)) {
                         if (columnName.toLowerCase() === 'projectid') {
-                            continue; // Skip ProjectID as we've already handled it
+                            continue; 
                         }
                         
                         const inputElement = document.getElementById(columnName);
@@ -1195,16 +1269,16 @@ function changeProjectData() {
                         
                         const inputValue = inputElement.value;
                         
-                        // Only add non-empty values
+                        //only add non-empty values
                         if (inputValue !== "" && inputValue !== null) {
                             if (columnType.includes('BOOLEAN')) {
-                                // Handle boolean fields by converting 'true'/'false' string to boolean
+                                //handle  boolean fields by converting 'true'/'false' string to boolean
                                 if (inputValue.toLowerCase() === 'true') {
                                     updatedData[columnName] = true;
                                 } else if (inputValue.toLowerCase() === 'false') {
                                     updatedData[columnName] = false;
                                 } else {
-                                    updatedData[columnName] = inputValue; // Keep original value if not recognized
+                                    updatedData[columnName] = inputValue; //keep original value if not recognized
                                 }
                             } else {
                                 updatedData[columnName] = inputValue;
@@ -1214,7 +1288,7 @@ function changeProjectData() {
 
                     console.log("Final data to be sent:", updatedData);
 
-                    // Send the updated data to the server
+                    //send the updated data to the server
                     fetch('/update_project_data', {
                         method: 'POST',
                         headers: {
@@ -1231,7 +1305,6 @@ function changeProjectData() {
                     .then(responseData => {
                         if (responseData.message) {
                             alert("Project data updated successfully!");
-                            // Optionally refresh the project table
                             fetchProjectData();
                         } else {
                             alert("Failed to update project data: " + 
@@ -1251,17 +1324,18 @@ function changeProjectData() {
     }
 }
 
+//edits schedule table rows
 function changeScheduleData() {
     const d = document.getElementById('schedulejsinput');
 
     if (document.getElementById('schedulerow').value === "changerow") {
-        d.innerHTML = ""; // Clear existing content
+        d.innerHTML = ""; 
 
-        // Fetch schedule columns and dynamically create inputs
+        //fetch schedule columns and dynamically create inputs
         fetch('/get_all_model_columns')
             .then(response => response.json())
             .then(allModelColumns => {
-                const columns = allModelColumns['Schedule'];  // Assuming Schedule is the model
+                const columns = allModelColumns['Schedule'];  
 
                 if (!columns) {
                     console.error('Schedule columns not found!');
@@ -1269,8 +1343,13 @@ function changeScheduleData() {
                     return;
                 }
 
-                // Loop through the columns and create input fields
+                //loop through the columns and create input fields
                 for (const [columnName, columnType] of Object.entries(columns)) {
+
+                    const label = document.createElement('label');
+                    label.setAttribute('for', columnName);  //associate label with the input field
+                    label.innerHTML = columnName.charAt(0).toUpperCase() + columnName.slice(1);  
+
                     const input = document.createElement('input');
                     input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1);
                     input.id = columnName;
@@ -1283,18 +1362,19 @@ function changeScheduleData() {
                     } else if (columnType.includes('VARCHAR') || columnType.includes('TEXT')) {
                         input.type = 'text';
                     } else {
-                        input.type = 'text';  // Default to text
+                        input.type = 'text';  
                     }
 
+                    d.appendChild(label);
                     d.appendChild(input);
                     d.appendChild(document.createElement('br'));
                 }
 
-                // Add button click handler to update the record
+                //button handler to update record
                 document.getElementById('scheduleimplement').onclick = function () {
                     const updatedData = {};
 
-                    // Gather all input values
+                    //gather all input values
                     for (const [columnName] of Object.entries(columns)) {
                         const inputValue = document.getElementById(columnName).value;
                         if (inputValue) {
@@ -1302,11 +1382,11 @@ function changeScheduleData() {
                         }
                     }
 
-                    // Make sure ScheduleID is included in the updated data
-                    const scheduleId = document.getElementById('scheduleid').value; // assuming you have an element for ScheduleID
-                    updatedData['ScheduleID'] = scheduleId; // Include ScheduleID for the update
+                    //ensure scheduleid is in updated data
+                    const scheduleId = document.getElementById('scheduleid').value; 
+                    updatedData['ScheduleID'] = scheduleId; 
 
-                    // Send the updated data to the server
+                    //send the updated data to the server
                     fetch('/update_schedule_data', {
                         method: 'POST',
                         headers: {
@@ -1318,7 +1398,7 @@ function changeScheduleData() {
                     .then(responseData => {
                         if (responseData.message) {
                             alert("Schedule data updated successfully!");
-                            d.innerHTML = ""; // Optionally clear the form
+                            d.innerHTML = ""; 
                         } else {
                             alert("Failed to update schedule data.");
                         }
@@ -1337,17 +1417,18 @@ function changeScheduleData() {
 }
 
 
+//edits pump table rows
 function changePumpData() {
     const d = document.getElementById('pumpjsinput');
 
     if (document.getElementById('pumprow').value === "changerow") {
-        d.innerHTML = ""; // Clear existing content
+        d.innerHTML = ""; 
 
-        // Fetch pump columns and dynamically create inputs
+        //fetch pump columns and dynamically create inputs
         fetch('/get_all_model_columns')
             .then(response => response.json())
             .then(allModelColumns => {
-                const columns = allModelColumns['Pump'];  // Assuming Pump is the model
+                const columns = allModelColumns['Pump'];  
 
                 if (!columns) {
                     console.error('Pump columns not found!');
@@ -1355,19 +1436,24 @@ function changePumpData() {
                     return;
                 }
 
-                // Create PumpID input field first
+                //create pumpid input field first
                 const pumpIdInput = document.createElement('input');
                 pumpIdInput.placeholder = "PumpID";
                 pumpIdInput.id = "PumpID";
                 pumpIdInput.name = "PumpID";
-                pumpIdInput.type = "number"; // Assuming PumpID is an integer
+                pumpIdInput.type = "number"; 
 
                 d.appendChild(pumpIdInput);
                 d.appendChild(document.createElement('br'));
 
-                // Loop through the columns and create input fields (excluding PumpID)
+                //loop through the columns and create input fields (excluding PumpID)
                 for (const [columnName, columnType] of Object.entries(columns)) {
-                    if (columnName.toLowerCase() !== 'pumpid') {  // Skip PumpID (handled above)
+                    if (columnName.toLowerCase() !== 'pumpid') {  
+
+                        const label = document.createElement('label');
+                        label.setAttribute('for', columnName);  //associate label with the input field
+                        label.innerHTML = columnName.charAt(0).toUpperCase() + columnName.slice(1);  
+
                         const input = document.createElement('input');
                         input.placeholder = columnName.charAt(0).toUpperCase() + columnName.slice(1);
                         input.id = columnName;
@@ -1380,15 +1466,16 @@ function changePumpData() {
                         } else if (columnType.includes('VARCHAR') || columnType.includes('TEXT')) {
                             input.type = 'text';
                         } else {
-                            input.type = 'text';  // Default to text
+                            input.type = 'text';  
                         }
 
+                        d.appendChild(label);
                         d.appendChild(input);
                         d.appendChild(document.createElement('br'));
                     }
                 }
 
-                // Add button click handler to update the record
+                //button handler to update record
                 document.getElementById('pumpimplement').onclick = function () {
                     const updatedData = {};
                     const pumpIdValue = document.getElementById("PumpID").value;
@@ -1398,11 +1485,11 @@ function changePumpData() {
                         return;
                     }
 
-                    updatedData["PumpID"] = pumpIdValue; // Ensure PumpID is included
+                    updatedData["PumpID"] = pumpIdValue; 
 
-                    // Gather all input values
+                    //gather all input values
                     for (const [columnName] of Object.entries(columns)) {
-                        if (columnName.toLowerCase() !== 'pumpid') {  // Skip PumpID
+                        if (columnName.toLowerCase() !== 'pumpid') {  
                             const inputValue = document.getElementById(columnName).value;
                             if (inputValue) {
                                 updatedData[columnName] = inputValue;
@@ -1410,7 +1497,7 @@ function changePumpData() {
                         }
                     }
 
-                    // Send the updated data to the server
+                    //send the updated data to the server
                     fetch('/update_pump_data', {
                         method: 'POST',
                         headers: {
@@ -1422,7 +1509,6 @@ function changePumpData() {
                     .then(responseData => {
                         if (responseData.message) {
                             alert("Pump data updated successfully!");
-                            updatePumpTable();  // Refresh the table to reflect changes
                         } else {
                             alert("Failed to update pump data.");
                         }
@@ -1440,23 +1526,23 @@ function changePumpData() {
     }
 }
 
-
+//deleting project data rows
 function deleteProjectData() {
     const selectedIds = [];
     const tableBody = document.getElementById("projecttable");
     const checkboxes = tableBody.querySelectorAll(".row-checkbox");
 
+    //get projetid from checkbox and adds it to id list
     checkboxes.forEach(checkbox => {
         if (checkbox.checked) {
-            selectedIds.push(Number(checkbox.dataset.projectId)); // Get ProjectID from data attribute
+            selectedIds.push(Number(checkbox.dataset.projectId)); 
         }
     });
 
     if (selectedIds.length > 0) {
-        // Log the selected IDs for debugging purposes
-        console.log("Selected IDs to delete:", selectedIds);
+        
 
-        // Send the selected ProjectIDs to Flask for deletion
+        //send ids to flask
         fetch('/delete_project_rows', {
             method: 'POST',
             headers: {
@@ -1468,44 +1554,40 @@ function deleteProjectData() {
         .then(data => {
             if (data.success) {
                 selectedIds.forEach(id => {
-                    // Find the row by matching the ProjectID
+                    //find row matching id
                     const rowToDelete = tableBody.querySelector(`input[data-project-id="${id}"]`).closest("tr");
                     if (rowToDelete) {
-                        rowToDelete.remove(); // Remove the entire row containing the matching ProjectID
+                        rowToDelete.remove(); //removing entire row
                     }
                 });
                 alert('Rows deleted successfully');
-            } else {
-                alert('Failed to delete rows');
             }
         })
         .catch(error => {
-            //console.error('Error deleting rows:', error);
-            //alert('An error occurred while deleting rows');
+            console.error('Error deleting rows:', error);
         });
     } else {
         alert('No rows selected');
     }
 }
+
+//deleting schedule rows, same as projectdeletion
 function deleteScheduleData() {
     
     const selectedIds = [];
-    const tableBody = document.getElementById("schedule-data"); // Make sure this matches your actual table ID
+    const tableBody = document.getElementById("schedule-data"); 
     const checkboxes = tableBody.querySelectorAll("input[type='checkbox']");
-    console.log("Found checkboxes (any type):", checkboxes.length);    
-    console.log('Checkboxes found:', checkboxes.length);
     
+    //adds selected ids if checkbox is checked
     checkboxes.forEach(checkbox => {
         if (checkbox.checked) {
-            console.log('Selected Schedule ID:', checkbox.dataset.scheduleId); // Use lowercase 'i'
+            console.log('Selected Schedule ID:', checkbox.dataset.scheduleId); 
             selectedIds.push(Number(checkbox.parentNode.parentNode.querySelector("td:nth-child(2)").textContent));
         }
     });
 
-    console.log('Selected IDs:', selectedIds);
-
+    //sends data to flask to delete
     if (selectedIds.length > 0) {
-        // Rest of your deletion code...
         fetch('/delete_schedule_rows', {
             method: 'POST',
             headers: {
@@ -1517,19 +1599,18 @@ function deleteScheduleData() {
         .then(data => {
             if (data.success) {
                 selectedIds.forEach(id => {
+
+                    //deletes the row in HTML
                     const rowToDelete = tableBody.querySelector(`input[data-schedule-id="${id}"]`).closest("tr");
                     if (rowToDelete) {
                         rowToDelete.remove();
                     }
                 });
                 alert('Rows deleted successfully');
-            } else {
-                alert('Failed to delete rows');
-            }
+            } 
         })
         .catch(error => {
             console.error('Error deleting rows:', error);
-            //alert('An error occurred while deleting rows');
         });
     } else {
         alert('No rows selected');
@@ -1539,20 +1620,21 @@ function deleteScheduleData() {
 
     
 
-// Function to delete selected rows from the schedule table
+//delete rows from  schedule table
 function deletePumpData() {
     const selectedIds = [];
     const tableBody = document.getElementById("pumptable");
     const checkboxes = tableBody.querySelectorAll("input[type='checkbox']");
 
+    //get schedule id from checked box and add it to list
     checkboxes.forEach(checkbox => {
         if (checkbox.checked) {
-            selectedIds.push(Number(checkbox.parentNode.parentNode.querySelector("td:nth-child(2)").textContent)); // Get ScheduleID from data attribute
+            selectedIds.push(Number(checkbox.parentNode.parentNode.querySelector("td:nth-child(2)").textContent)); 
         }
     });
 
+    //send data to flask 
     if (selectedIds.length > 0) {
-        // Send the selected ScheduleIDs to Flask for deletion
         fetch('/delete_pump_rows', {
             method: 'POST',
             headers: {
@@ -1564,16 +1646,14 @@ function deletePumpData() {
         .then(data => {
             if (data.success) {
                 selectedIds.forEach(id => {
-                    // Find the row by matching the ScheduleID
+                    //find row with id and remove
                     const rowToDelete = tableBody.querySelector(`input[data-pump-id="${id}"]`).closest("tr");
                     if (rowToDelete) {
-                        rowToDelete.remove(); // Remove the entire row containing the matching ScheduleID
+                        rowToDelete.remove(); 
                     }
                 });
                 alert('Rows deleted successfully');
-            } else {
-                alert('Failed to delete rows');
-            }
+            } 
         })
         .catch(error => {
             console.error('Error deleting rows:', error);
@@ -1584,7 +1664,7 @@ function deletePumpData() {
     }
 }
 
-
+//delete rows from system
 function deleteSystemData() {
     const selectedIds = [];
     const tableBody = document.getElementById("systemtable");
@@ -1597,7 +1677,7 @@ function deleteSystemData() {
     });
 
     if (selectedIds.length > 0) {
-        // Send the selected ScheduleIDs to Flask for deletion
+        //send the ids to flask to delete
         fetch('/delete_system_rows', {
             method: 'POST',
             headers: {
@@ -1609,16 +1689,14 @@ function deleteSystemData() {
         .then(data => {
             if (data.success) {
                 selectedIds.forEach(id => {
-                    // Find the row by matching the ScheduleID
+                    //find the row by matching the id
                     const rowToDelete = tableBody.querySelector(`input[data-system-id="${id}"]`).closest("tr");
                     if (rowToDelete) {
-                        rowToDelete.remove(); // Remove the entire row containing the matching ScheduleID
+                        rowToDelete.remove(); 
                     }
                 });
                 alert('Rows deleted successfully');
-            } else {
-                alert('Failed to delete rows');
-            }
+            } 
         })
         .catch(error => {
             console.error('Error deleting rows:', error);
@@ -1629,14 +1707,7 @@ function deleteSystemData() {
     }
 }
 
-
-
-
-
-
-
-// Add similar event listeners for other tables as needed...
-
+//adding column functionality 
 function addColumn() {
     const tableName = document.getElementById("tableName").value;
     const columnName = document.getElementById("columnName").value;
@@ -1648,6 +1719,7 @@ function addColumn() {
         column_type: columnType
     };
 
+    //sends data into app route;
     fetch("/add_column", {
         method: "POST",
         headers: {
@@ -1657,6 +1729,7 @@ function addColumn() {
     })
     .then(response => response.json())
     .then(result => {
+        //adds message to screen
         const responseMessage = document.getElementById("responseMessage");
         if (result.message) {
             responseMessage.textContent = result.message;
@@ -1669,39 +1742,36 @@ function addColumn() {
     });
 }
 
+//filtering schedule data by month
 function filterByMonth() {
     const mRows = document.getElementById('scheduletable').querySelectorAll("tr");
-    const scheduleValue = document.getElementById('searchdate').value;
+    const scheduleValue = document.getElementById('searchdate').value.toLowerCase(); 
 
-    if (scheduleValue !== "" && scheduleValue !== "Select a month") {
-        const inputMonth = parseInt(scheduleValue, 10); // Convert dropdown value to an integer
-
-        // Loop through schedule rows and check if the month matches
-        for (let i = 0; i < mRows.length; i++) {
+    //checks if that value not null
+    if (scheduleValue !== "") {
+        for (let i = 1; i < mRows.length; i++) { // start from 1 to skip header
             const mRow = mRows[i];
-            if (i === 0) continue; // Skip header row
+            const rowDate = mRow.children[2]?.textContent.toLowerCase(); //ensure lowercase for comparison
 
-            const rowDate = mRow.children[2]?.textContent; // Ensure the correct column is used
-            if (!rowDate) continue;
-
-            const rowDateObj = new Date(rowDate);
-            const rowMonth = rowDateObj.getMonth();
-
-            // Show or hide rows based on matching month
-            mRow.style.display = rowMonth === inputMonth ? '' : 'none';
+            //if value is included in rowdate, then display, else don't
+            if (rowDate.includes(scheduleValue)) {
+                mRow.style.display = '';
+            } else {
+                mRow.style.display = 'none';
+            }
         }
     }
 }
 
-
-
-
+//fetch all data
 fetchProjectData();
 fetchPumpData();
 fetchScheduleData();
 fetchSystemData();
+
+//when page is loaded
 document.addEventListener("DOMContentLoaded", function () {
-    // Ensure elements exist before attaching event listeners
+    //ensures elements exist before attaching event listeners
     const rowElement = document.getElementById('row');
     const searchMaintenanceButton = document.getElementById('searchmaintenance');
     const searchDateButton = document.getElementById('searchdate');
@@ -1714,23 +1784,21 @@ document.addEventListener("DOMContentLoaded", function () {
     const pumpDelete=document.getElementById('pumpdelete');
     const scheduleDelete=document.getElementById('scheduledelete');
     const searchDate=document.getElementById('clickdate');
-    // Check if the 'row' element exists before attaching event listeners
+
+    //checks if all elmements exist before adding listeners 
     if (rowElement) {
         rowElement.addEventListener('change', addMaintenanceInputs);
-        rowElement.addEventListener('change', updateMaintenanceData);
+        rowElement.addEventListener('change', changeMaintenanceData);
     }
 
-    // Check if the 'searchmaintenance' button exists
     if (searchMaintenanceButton) {
         searchMaintenanceButton.addEventListener('click', searchMaintenance);
     }
 
-    // Check if the 'searchdate' button exists
     if (searchDateButton) {
         searchDateButton.addEventListener('click', filterData);
     }
 
-    // Check if the 'systemrow' element exists
     if (systemRowElement) {
         systemRowElement.addEventListener('change', addSystemInputs);
         systemRowElement.addEventListener('change', changeSystemData);

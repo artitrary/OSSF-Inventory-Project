@@ -11,6 +11,7 @@
 </head> 
 <body>
     <nav> 
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width:90px; height:auto">      
         <a href="{{ url_for('home') }}" class="link">Maintenance</a> 
         <a href="{{ url_for('system') }}" class="link">System</a>
         <a href="{{ url_for('pump') }}" class="link">Pump</a> 
@@ -22,14 +23,14 @@
         <div class="container">
             <div id="clickables">
                
-                
+                <button id="projectdelete">Delete Rows</button>
+
                 <select id="projectrow">
                     <option disabled selected>Rows</option>
                     <option value="addrow">Add</option>
                     <option value="changerow">Change</option>
                 </select>
                 <button id="projectimplement">Implement Action (for dropdown)</button>
-                <button id="projectdelete">Delete</button>
                 <div id="projectjsinput"></div>
                 
             </div>

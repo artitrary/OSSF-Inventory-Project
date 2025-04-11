@@ -10,12 +10,12 @@
 </head> 
 <body>
     <nav> 
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width:90px; height:auto">      
         <a href="{{ url_for('home') }}" class="link">Maintenance</a> 
         <a href="{{ url_for('system') }}" class="link">System</a>
         <a href="{{ url_for('pump') }}" class="link">Pump</a> 
         <a href="{{ url_for('schedule') }}" class="link">Schedule</a> 
         <a href="{{ url_for('project') }}" class="link">Project</a>
-
     </nav>
     
     <div class="all">
@@ -23,14 +23,13 @@
         
         <div class="container">
             <div class="clickables">
-                
+                <button id="systemdelete">Delete Rows</button>
                 <select id="systemrow">
-                    <option disabled selected>Rows</option>
+                    <option disabled selected>Add/Change Row</option>
                     <option value="addrow">Add</option>
                     <option value="changerow">Change</option>
                 </select>
                     <button id="systemimplement">Implement Action (for dropdown)</button>
-                    <button id="systemdelete">Delete</button>
                 <div id="systemjsinput">
         
                 </div>

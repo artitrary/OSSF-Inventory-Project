@@ -12,49 +12,61 @@
 </head> 
 <body>
     <nav> 
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width:90px; height:auto">      
         <a href="{{ url_for('home') }}" class="link">Maintenance</a> 
         <a href="{{ url_for('system') }}" class="link">System</a>
         <a href="{{ url_for('pump') }}" class="link">Pump</a> 
         <a href="{{ url_for('schedule') }}" class="link">Schedule</a> 
         <a href="{{ url_for('project') }}" class="link">Project</a>
-
     </nav>
+
     <div class="all">
         <h1>Maintenance</h1>
         <div class="container">
             <div id="clickables">
+                <div class="inputs">
+                    <h4>Filter Dates</h4>
                     <label for="startDate">Start Date:</label>
                     <input type="date" id="startDate" name="startDate">
-            
+                
                     <label for="endDate">End Date:</label>
                     <input type="date" id="endDate" name="endDate">
                     <button id="searchdate">Search Date</button>
             
+                </div>
+                    
             
-
+                <br>
                 <div class="inputs">
+                    <h4>Search for Specific Inputs</h4>
+
                     <label for="searchpump">Search by PumpName</label>
                     <input type="text" id="searchpump">
-                </div>
-                <div class="inputs">
                     <label for="searchproj">Search by ProjectName</label>
                     <input type="text" id="searchproj">
-                </div>
-                <div class="inputs">
                     <label for="searchschedule">Search by ScheduleID</label>
                     <input type="text" id="searchschedule">
+                    <button id="searchmaintenance">Search by Pump/Proj/Schedule</button>
+
                 </div>
-                <button id="searchmaintenance">Search by Pump/Proj/Schedule</button>
-                
-                <select id="row">
-                    <option disabled selected>Rows</option>
-                    <option value="addrow">Add</option>
-                    <option value="changerow">Change</option>
-                </select>
+                <br>
+                <div class="inputs">
+                    <h4>Add/Edit Row</h4>
+
+                    <select id="row">
+                        <option disabled selected>Rows</option>
+                        <option value="addrow">Add</option>
+                        <option value="changerow">Change</option>
+                    </select>
                     <button id="maintenanceimplement">Implement Action (for dropdown)</button>
+                </div>
+                
+               
                 <div id="mjsinput">
         
                 </div>
+                <h4>Add column</h4>
+
                 <form id="addColumnForm">
                     <!-- Dropdown for selecting the table -->
                     <label for="tableName">Select Table:</label>
@@ -75,9 +87,10 @@
                     <!-- Dropdown for selecting column type -->
                     <label for="columnType">Column Type:</label>
                     <select id="columnType" required>
-                        <option value="VARCHAR">VARCHAR</option>
                         <option value="INT">INT</option>
                         <option value="TEXT">TEXT</option>
+                        <option value="DATE">DATE</option>
+
                     </select>
                     <br><br>
             

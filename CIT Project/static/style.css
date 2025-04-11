@@ -19,18 +19,20 @@ body {
     gap:10px;
 }
 nav {
+    display: flex;
+    flex-direction: row;  
     font-style: italic;
     font-size:large;
     background-color:maroon;  
     display:block;
     display:flex;
-    padding:30px;
-    justify-content: space-evenly;
     margin:-10px;
-    
+    padding:20px;
+    justify-content: space-evenly;  
+    align-items: center;      
 }
 
-h1 {
+h1,h4{
     color: maroon;
     
 }
@@ -44,25 +46,32 @@ td,th{
     color:#36454F;
 }
 
-a{
+.link{
     text-decoration: none;
     font-style: normal;
     color:white;
+    
 }
-a:hover{
+.link:hover{
     color:gray;   
 }
 button{
-    padding-right:5px;
+    padding:10px;
+    border:none;
+    border-radius:8px;
+    background-color: rgb(193, 70, 70);
+    color:white;
 }
-.clickables{
-    margin-right:90px;
+  
+.clickables>*{
+    margin: 5px;
+    
 }
-
 #systemtable{
     padding:5px;
     font-size: 10px;
 }
-.inputs{
-    margin:5px;
+
+.inputs > *{
+    margin: 5px;
 }
