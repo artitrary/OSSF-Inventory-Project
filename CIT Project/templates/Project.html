@@ -10,7 +10,7 @@
     <script src="../static/script.js" defer></script>
 </head> 
 <body>
-    <nav> 
+    <nav>  <!-- Navbar set up with all files-->
         <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width:90px; height:auto">      
         <a href="{{ url_for('home') }}" class="link">Maintenance</a> 
         <a href="{{ url_for('system') }}" class="link">System</a>
@@ -18,26 +18,26 @@
         <a href="{{ url_for('schedule') }}" class="link">Schedule</a> 
         <a href="{{ url_for('project') }}" class="link">Project</a>
     </nav>
-    <div class="all">
+    <div class="all"> <!--  Project container / main input boxes-->
         <h1>Project</h1>
         <div class="container">
             <div id="clickables">
                
                 <button id="projectdelete">Delete Rows</button>
-
+                                 <!--Delete Row function / implementation -->
                 <select id="projectrow">
                     <option disabled selected>Rows</option>
-                    <option value="addrow">Add</option>
-                    <option value="changerow">Change</option>
+                    <option value="addrow">Add</option> <!-- add row function-->
+                    <option value="changerow">Change</option> <!-- Option to modify rows  -->
                 </select>
                 <button id="projectimplement">Implement Action (for dropdown)</button>
-                <div id="projectjsinput"></div>
+                <div id="projectjsinput"></div> <!-- Implement action is what actually creates the execution for the code -->
                 
             </div>
             <div>
                 <br>
                 <table id="projecttable">
-                    <thead>
+                    <thead> <!--Table set up for page -->
                         <tr id="project-header-row">
                             <th>Select</th>
                         </tr>
