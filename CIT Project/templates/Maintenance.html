@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Database</title>
-    <link href="../static/style.css" rel="stylesheet">
+    <link href="../static/style.css" rel="stylesheet"> <!--Database Setup Page-->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
@@ -11,7 +11,7 @@
     
 </head> 
 <body>
-    <nav> 
+    <nav>  <!--Links / Nav Bar for all other pages-->
         <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width:90px; height:auto">      
         <a href="{{ url_for('home') }}" class="link">Maintenance</a> 
         <a href="{{ url_for('system') }}" class="link">System</a>
@@ -20,8 +20,8 @@
         <a href="{{ url_for('project') }}" class="link">Project</a>
     </nav>
 
-    <div class="all">
-        <h1>Maintenance</h1>
+    <div class="all"> <!-- Maintenance input statement setup-->
+        <h1>Maintenance</h1> 
         <div class="container">
             <div id="clickables">
                 <div class="inputs">
@@ -29,7 +29,7 @@
                     <label for="startDate">Start Date:</label>
                     <input type="date" id="startDate" name="startDate">
                 
-                    <label for="endDate">End Date:</label>
+                    <label for="endDate">End Date:</label> <!--text inputs for vals --> 
                     <input type="date" id="endDate" name="endDate">
                     <button id="searchdate">Search Date</button>
             
@@ -38,10 +38,10 @@
             
                 <br>
                 <div class="inputs">
-                    <h4>Search for Specific Inputs</h4>
+                    <h4>Search for Specific Inputs</h4> <!--allows users to search for particular vals -->
 
                     <label for="searchpump">Search by PumpName</label>
-                    <input type="text" id="searchpump">
+                    <input type="text" id="searchpump"> <!-- search by: ___ -->
                     <label for="searchproj">Search by ProjectName</label>
                     <input type="text" id="searchproj">
                     <label for="searchschedule">Search by ScheduleID</label>
@@ -50,7 +50,7 @@
 
                 </div>
                 <br>
-                <div class="inputs">
+                <div class="inputs"> <!-- if user edit function -->
                     <h4>Add/Edit Row</h4>
 
                     <select id="row">
@@ -59,14 +59,14 @@
                         <option value="changerow">Change</option>
                     </select>
                     <button id="maintenanceimplement">Implement Action (for dropdown)</button>
-                </div>
+                </div> <!-- button tells website to launch function-->
                 
                
                 <div id="mjsinput">
         
                 </div>
                 <h4>Add column</h4>
-
+ <!-- Add column function setup -->
                 <form id="addColumnForm">
                     <!-- Dropdown for selecting the table -->
                     <label for="tableName">Select Table:</label>
@@ -110,7 +110,7 @@
                         <th>Select</th> <!-- This one will be static, for the checkbox -->
                         <!-- Dynamic headers will be inserted here by JavaScript -->
                     </tr>
-                </thead>
+                </thead>  <--Table id -->
                 <tbody id="maintenance-data">
                     <tr>
                         <td colspan="7">Loading data...</td>
