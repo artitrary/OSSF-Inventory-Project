@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap" rel="stylesheet">
 </head> 
 <body>
-    <nav> 
+    <nav>  <!-- Adds links to nav bar / creates click-able guides to all existing files/pages -->
         <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width:90px; height:auto">      
         <a href="{{ url_for('home') }}" class="link">Maintenance</a> 
         <a href="{{ url_for('system') }}" class="link">System</a>
@@ -20,14 +20,14 @@
     
     <div class="all">
         <h1>System</h1>
-        
+        <!-- Creates base level structure of system page -->
         <div class="container">
             <div class="clickables">
-                <button id="systemdelete">Delete Rows</button>
+                <button id="systemdelete">Delete Rows</button> <!-- Enables deletion of rows from visibility -->
                 <select id="systemrow">
-                    <option disabled selected>Add/Change Row</option>
+                    <option disabled selected>Add/Change Row</option> <!-- Enables addition of rows -->
                     <option value="addrow">Add</option>
-                    <option value="changerow">Change</option>
+                    <option value="changerow">Change</option> <!-- Allows modification of existing rows -->
                 </select>
                     <button id="systemimplement">Implement Action (for dropdown)</button>
                 <div id="systemjsinput">
