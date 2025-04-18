@@ -10,7 +10,7 @@
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head> 
 <body>
-    <nav>  <!-- Setup for all links / pages-->
+    <nav> 
         <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width:90px; height:auto">      
         <a href="{{ url_for('home') }}" class="link">Maintenance</a> 
         <a href="{{ url_for('system') }}" class="link">System</a>
@@ -23,15 +23,15 @@
 
         <div class="container">
             <div class="clickables">
-                <button id="pumpdelete">Delete Rows</button> <!-- removes row from table -->
+                <button id="pumpdelete" onclick="return confirm('Are you sure you want to delete these rows?')">Delete Rows</button>
 
                 <select id="pumprow">
                     <option disabled selected>Rows</option>
-                    <option value="addrow">Add</option> <!-- Creates additional row for table-->
-                    <option value="changerow">Change</option> <!-- Modifies existing row -->
+                    <option value="addrow">Add</option>
+                    <option value="changerow">Change</option>
                 </select>
                     <button id="pumpimplement">Implement Action (for dropdown)</button>
-                <div id="pumpjsinput">  <!-- ^Above is what actually executes the requested drop down  -->
+                <div id="pumpjsinput">
         
                 </div>
             </div>

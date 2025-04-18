@@ -10,7 +10,7 @@
     <script src="{{ url_for('static', filename='script.js') }}" defer></script>
 </head> 
 <body>
-    <nav>  <!-- Nav bar / links to all other files or pages -->
+    <nav> 
         <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width:90px; height:auto">      
         <a href="{{ url_for('home') }}" class="link">Maintenance</a> 
         <a href="{{ url_for('system') }}" class="link">System</a>
@@ -21,13 +21,13 @@
 
     <div class="all">
         <h1>Schedule</h1>
- <!-- Base level formatting for schedule, includes: user input boxes, dropdown, etc -->
+
         <div class="clickables">
             <div class="inputs">
                 <label for="searchdate">Search by Month</label>
                 <select id="searchdate">
                     <option disabled selected>Select a month</option>
-                    <option value="jan">January</option> <!-- Dropdown menu for user regarding month -->
+                    <option value="jan">January</option>
                     <option value="feb">February</option>
                     <option value="mar">March</option>
                     <option value="apr">April</option>
@@ -40,15 +40,15 @@
                     <option value="nov">November</option>
                     <option value="dec">December</option>
                 </select>
-                <button id="clickdate">Search</button> <!-- Button must be pressed to execute search function -->
+                <button id="clickdate">Search</button>
 
                 
 
             </div>
-            <button id="scheduledelete">Delete Rows</button> <!-- Removes rows from visible range -->
+            <button id="scheduledelete" onclick="return confirm('Are you sure you want to delete these rows?')">Delete Rows</button>
             <select id="schedulerow">
                 <option disabled selected>Rows</option>
-                <option value="addrow">Add</option>  <!-- Enables adding and modification of existing rows -->
+                <option value="addrow">Add</option>
                 <option value="changerow">Change</option>
             </select>
                 <button id="scheduleimplement">Implement Action (for dropdown)</button>
@@ -57,7 +57,7 @@
             </div>
         </div>
         <div class="container">
-            <table id="scheduletable"> <!-- Creation of table for appropriate display -->
+            <table id="scheduletable">
                 <thead>
                     <tr id="schedule-header-row">
                     </tr>

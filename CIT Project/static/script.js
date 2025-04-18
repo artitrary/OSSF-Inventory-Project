@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 //clear existing content
                 tableBody.innerHTML = "";
-                headerRow.innerHTML = `<th>Select</th>`; // Add "Select" header
+                headerRow.innerHTML = `<th>Select</th>`; 
 
                 //crate headers dynamically based on flask
                 columns.forEach(col => {
@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 rows.forEach(row => {
                     const tr = document.createElement("tr");
 
-                    // Checkbox column
                     const checkboxCell = document.createElement("td");
                     const checkbox = document.createElement("input");
                     checkbox.type = "checkbox";
@@ -44,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         const td = document.createElement("td");
                         if (col === "manualname") {
                             const fileName = `${row[col]}.pdf`; 
-                            td.innerHTML = `<a href="/static/pdfs/${fileName}" download>${fileName}</a>`; // Link to the .pdf file
+                            td.innerHTML = `<a href="/static/pdfs/${fileName}" download>${fileName}</a>`; //link to the .pdf file
                         } else {
                             //sets td to the manualname unless null, then just blank spring
                             td.innerHTML = row[col] !== null ? row[col] : '';
@@ -62,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     };
 
-    // Fetch data for all tables
+    //fetch data for all tables
     fetchData("/get_maintenance_data", "maintenance-data", "maintenance-header-row");
     fetchData("/get_system_data", "system-data", "system-header-row");
     fetchData("/get_project_data", "project-data", "project-header-row");
@@ -115,7 +114,7 @@ async function fetchScheduleData() {
             const data = await response.json();
             if (data.columns && data.data) {
                 scheduleData = data;
-                generateScheduleRows(scheduleData); // Call to generate the rows
+                generateScheduleRows(scheduleData); //call to generate the rows
             } else {
                 console.error("Fetched data does not have the expected structure:", data);
             }
@@ -136,7 +135,7 @@ async function fetchProjectData() {
             alert("Error loading project data.");
         }
     } 
-    return projectData; // Return the fetched data
+    return projectData; //return the fetched data
 }
 
 //ensures schedule data is fetched at beginning
@@ -980,7 +979,7 @@ function changeMaintenanceData() {
                     //append input fields to the form container
                     d.appendChild(label);
                     d.appendChild(input);
-                    d.appendChild(document.createElement('br'));  // Line break between inputs
+                    d.appendChild(document.createElement('br'));  
                 }
     
                 
@@ -1672,7 +1671,7 @@ function deleteSystemData() {
 
     checkboxes.forEach(checkbox => {
         if (checkbox.checked) {
-            selectedIds.push(Number(checkbox.parentNode.parentNode.querySelector("td:nth-child(2)").textContent)); // Get ScheduleID from data attribute
+            selectedIds.push(Number(checkbox.parentNode.parentNode.querySelector("td:nth-child(2)").textContent)); //get scheduleid from data attribute
         }
     });
 

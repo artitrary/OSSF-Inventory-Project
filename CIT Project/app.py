@@ -3,10 +3,9 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import create_engine, text
 from sqlalchemy import Integer, String, Date, Boolean, Float, Text
 from sqlalchemy.inspection import inspect
-
-
 from sqlalchemy import text
 import os, logging  
+from dotenv import load_dotenv
 
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
@@ -18,12 +17,20 @@ app = Flask(__name__)
 #configure PostgreSQL database URI
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
-#use environment variable for the database URL
-DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://ossf_inventory:C1T0ssf!@drhscit.org:5432/ossfdb')
+#lod environment variables from .env file
+load_dotenv()
 
+#get DATABASE_URL from environment
+DATABASE_URL = os.getenv('DATABASE_URL')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://ossf_inventory:C1T0ssf!@drhscit.org:5432/ossfdb'
+#ensure DATABASE_URL is loaded
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable not set")
+
+#set up SQLAlchemy configuration
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 
 #initialize SQLAlchemy
 db = SQLAlchemy(app)
@@ -42,7 +49,7 @@ class MaintenanceLog(db.Model):
     date = db.Column(db.Date, nullable=False)
     description = db.Column(db.String(255), nullable=False)
     scheduleid = db.Column(db.Integer, db.ForeignKey('schedule.scheduleid'))
-    date2 = db.Column(db.Date, nullable=False)
+    #update columns here
 
     def __repr__(self):
         return f"<MaintenanceLog {self.maintenanceid}>"
@@ -59,7 +66,8 @@ class System(db.Model):
     additionalcomp = db.Column(db.String(255))
     manufacturer = db.Column(db.String(100))
     gpd = db.Column(db.Float)
-    manualname = db.Column(db.String(255))  # Updated here
+    manualname = db.Column(db.String(255))  
+    #update columns here
 
     def __repr__(self):
         return f"<System {self.systemid}>"
@@ -74,6 +82,7 @@ class Project(db.Model):
     funded = db.Column(db.Boolean)
     startdate = db.Column(db.Date)
     enddate = db.Column(db.Date)
+    #update columns here
 
     def __repr__(self):
         return f"<Project {self.projectid}>"
@@ -85,6 +94,7 @@ class Schedule(db.Model):
     scheduleid = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Date)
     description = db.Column(db.String(255))
+    #update columns here
 
     def __repr__(self):
         return f"<Schedule {self.scheduleid}>"
@@ -98,7 +108,8 @@ class Pump(db.Model):
     quantity = db.Column(db.Integer)
     partnumber = db.Column(db.String(50))
     brand = db.Column(db.String(100))
-    manualname = db.Column(db.String(255))  # Updated here
+    manualname = db.Column(db.String(255))  
+    #update columns here
 
     def __repr__(self):
         return f"<Pump {self.pumpid}>"
@@ -224,7 +235,7 @@ def add_maintenance_data():
                     return jsonify({'error': 'Invalid date format. Use YYYY-MM-DD or MM/DD/YY'}), 400
 
 
-        # Create new log entry dynamically
+        #create new log entry dynamically
         new_log = MaintenanceLog(**new_data)  
         db.session.add(new_log)
         db.session.commit()

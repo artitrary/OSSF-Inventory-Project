@@ -10,7 +10,7 @@
     <script src="../static/script.js" defer></script>
 </head> 
 <body>
-    <nav>  <!-- Navbar set up with all files-->
+    <nav> 
         <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" style="width:90px; height:auto">      
         <a href="{{ url_for('home') }}" class="link">Maintenance</a> 
         <a href="{{ url_for('system') }}" class="link">System</a>
@@ -18,26 +18,26 @@
         <a href="{{ url_for('schedule') }}" class="link">Schedule</a> 
         <a href="{{ url_for('project') }}" class="link">Project</a>
     </nav>
-    <div class="all"> <!--  Project container / main input boxes-->
+    <div class="all">
         <h1>Project</h1>
         <div class="container">
             <div id="clickables">
                
-                <button id="projectdelete">Delete Rows</button>
-                                 <!--Delete Row function / implementation -->
+                <button id="projectdelete" onclick="return confirm('Are you sure you want to delete these rows?')">Delete</button>>Delete Rows</button>
+
                 <select id="projectrow">
                     <option disabled selected>Rows</option>
-                    <option value="addrow">Add</option> <!-- add row function-->
-                    <option value="changerow">Change</option> <!-- Option to modify rows  -->
+                    <option value="addrow">Add</option>
+                    <option value="changerow">Change</option>
                 </select>
                 <button id="projectimplement">Implement Action (for dropdown)</button>
-                <div id="projectjsinput"></div> <!-- Implement action is what actually creates the execution for the code -->
+                <div id="projectjsinput"></div>
                 
             </div>
             <div>
                 <br>
                 <table id="projecttable">
-                    <thead> <!--Table set up for page -->
+                    <thead>
                         <tr id="project-header-row">
                             <th>Select</th>
                         </tr>
